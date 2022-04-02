@@ -1,4 +1,4 @@
-use crate::wmc::item::Item;
+use crate::wmc::item::{Item, ItemType};
 use crate::wmc::player::{Direction, Player};
 use bracket_lib::prelude::*;
 
@@ -172,8 +172,23 @@ impl State {
             if self.player.x == item.x && self.player.y == item.y {
                 //self.player.append();
                 self.player.eat(&item);
-
-                self.items[i] = Item::spawn();
+                if item.item_type == ItemType::Yummy {
+                    // offset egg from current positions so as to not immediately hatch/eat it
+                    let offset_x = match self.player.direction {
+                        Direction::Left => 1,
+                        Direction::Right => -1,
+                        _ => 0,};
+                    let offset_y = match self.player.direction{
+                        Direction::Up => 1,
+                        Direction::Down => -1,
+                        _ => 0,};
+                    let new_egg = Item::spawn_at(self.player.x + offset_x,
+                                                 self.player.y + offset_y,
+                                                 ItemType::Egg);
+                    self.items[i] = new_egg;
+                }else {
+                    self.items[i] = Item::spawn();
+                }
                 self.score += 1;
             }
         }

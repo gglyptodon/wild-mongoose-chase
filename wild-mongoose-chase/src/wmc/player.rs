@@ -202,9 +202,13 @@ impl Player {
             //        self.segments.pop();
             //    }
             //}
-            ItemType::NormalBonus => self.append(),
+            ItemType::Egg => self.append(),
+            ItemType::NormalBonus => {
+                println!("increment score here")
+            },
             ItemType::Yummy => {
                 println!("yum")
+
             }
             ItemType::Startling => {
                 println!("aaaah!");
