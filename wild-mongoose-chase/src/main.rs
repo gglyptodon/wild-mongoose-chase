@@ -10,7 +10,7 @@ fn main() -> BResult<()> {
         .with_font("tiles4.png", 32, 32)
         .with_simple_console(WIDTH, HEIGHT, "tiles4.png")
         .with_fancy_console(WIDTH,HEIGHT, "tiles4.png")
-        .with_title("Serpent")
+        .with_title("🐍 💨   Wild Mongoose Chase  💨 ")
         .with_fps_cap(30.0)
         //.with_tile_dimensions(16, 16)
         .build()?;
