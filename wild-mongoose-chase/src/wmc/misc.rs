@@ -13,6 +13,8 @@ pub struct State {
     items: Vec<Item>,
     symbol: Option<u16>,
     mongeese: Vec<Mongoose>,
+    // holds (x, y) positions for everything the upcoming move could potentially collide with
+    occupied: Vec<(i32, i32)>,
 }
 
 impl State {
@@ -27,6 +29,7 @@ impl State {
             items: vec![Item::spawn()],
             symbol: None,
             mongeese: vec![Mongoose::spawn()],
+            occupied: vec![],
         }
     }
     fn restart(&mut self) {
@@ -107,7 +110,7 @@ impl State {
         self.frame_time += ctx.frame_time_ms;
         if self.frame_time > FRAME_DURATION {
             self.frame_time = 0.0;
-            self.player.gravity_and_move();
+            self.player.gravity_and_move(&mut self.occupied);
         }
         if let Some(VirtualKeyCode::Left) = ctx.key {
             if self.player.direction == Direction::Right {

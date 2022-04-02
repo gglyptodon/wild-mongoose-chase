@@ -47,6 +47,12 @@ impl Segment {
     }
 
     pub fn update_direction(&mut self, previous: &Segment) {
+        self.take_move();
+        self.direction_now = self.direction_next;
+        self.direction_next = previous.direction_now;
+    }
+
+    pub fn take_move(&mut self){
         // move according to direction now
         match self.direction_now {
             Direction::Left => self.x -= 1,
@@ -55,8 +61,17 @@ impl Segment {
             Direction::Down => self.y += 1,
             Direction::Stopped => {}
         }
-        self.direction_now = self.direction_next;
-        self.direction_next = previous.direction_now;
+    }
+
+    // undo any very recent moves (in case attempted move was into an occupied space
+    pub fn un_move(&mut self, direction_old: Direction){
+        match direction_old {
+            Direction::Stopped => {},
+            Direction::Left => self.x += 1,
+            Direction::Right => self.x -= 1,
+            Direction::Up => self.y += 1,
+            Direction::Down => self.y -= 1,
+        }
     }
 }
 
@@ -145,8 +160,9 @@ impl Player {
         }
         ctx.set_active_console(0);
     }
-    pub fn gravity_and_move(&mut self) {
-        match self.direction {
+
+    pub fn gravity_and_move(&mut self, occupied: &mut Vec<(i32, i32)>) {
+        /*match self.direction {
             Direction::Stopped => {
                 self.segments.get_mut(0).unwrap().direction_next = Direction::Stopped
             }
@@ -166,7 +182,10 @@ impl Player {
                 self.segments.get_mut(0).unwrap().y += 1;
                 self.segments.get_mut(0).unwrap().direction_now = Direction::Down;
             }
-        }
+        }*/
+        let mut seg0 = self.segments.get_mut(0).unwrap();
+        seg0.direction_now = self.direction;
+        seg0.take_move();
 
         self.frame += 1;
         self.frame %= 2;
