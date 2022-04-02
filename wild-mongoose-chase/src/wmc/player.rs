@@ -4,18 +4,21 @@ use rand::{
     distributions::{Distribution, Standard},
     Rng,
 };
+use wmc::item::Item as WMCItem;
+use wmc::item::ItemType;
 
-impl Distribution<Direction> for Standard{
+use crate::wmc;
+
+impl Distribution<Direction> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Direction {
         match rng.gen_range(0..=3) {
             0 => Direction::Up,
             1 => Direction::Down,
             2 => Direction::Left,
-            _ => Direction::Right
+            _ => Direction::Right,
         }
     }
 }
-
 
 #[derive(Copy, Clone, Debug)]
 pub struct Segment {
@@ -44,6 +47,7 @@ impl Segment {
     }
 
     pub fn update_direction(&mut self, previous: &Segment) {
+        // move according to direction now
         match self.direction_now {
             Direction::Left => self.x -= 1,
             Direction::Right => self.x += 1,
@@ -97,13 +101,13 @@ impl Player {
 
     pub fn render(&mut self, ctx: &mut BTerm) {
         let mut glyph_idx = match self.direction {
-            Direction::Left => 17,
-            Direction::Right => 16,
-            Direction::Up => 4,
-            Direction::Down => 4,
-            _ => 16,
+            Direction::Left => 244,
+            Direction::Right => 245,
+            Direction::Up => 246,
+            Direction::Down => 246,
+            _ => 244,
         };
-
+        // player select override?
         if let Some(symbol) = self.symbol {
             glyph_idx = symbol;
         }
@@ -122,14 +126,21 @@ impl Player {
             glyph_idx,
         );
         for segment in self.segments.clone().iter().skip(1) {
+            let glyph_seg_idx = match segment.direction_now {
+                Direction::Left => 241,
+                Direction::Right => 242,
+                Direction::Up => 243,
+                Direction::Down => 243,
+                _ => 241,
+            };
             ctx.set_fancy(
-                PointF::new(segment.x as f32, segment.y  as f32),
+                PointF::new(segment.x as f32, segment.y as f32),
                 1,
                 Degrees::new(0.0),
                 PointF::new(1.0, 1.0),
                 WHITE,
                 DARK_GRAY,
-                7, //glyph_idx, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
+                glyph_seg_idx, //glyph_idx, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
             );
         }
         ctx.set_active_console(0);
@@ -162,7 +173,7 @@ impl Player {
 
         let seg = self.segments.clone();
         for (i, s) in self.segments.iter_mut().enumerate().skip(1) {
-            s.update_direction(seg.get(i -1).unwrap())
+            s.update_direction(seg.get(i - 1).unwrap())
         }
     }
     pub fn append(&mut self) {
@@ -176,10 +187,38 @@ impl Player {
         self.segments.push(Segment {
             x: next_seg_x,
             y: next_seg_y,
-            direction_next: rand::random(),//Direction::Stopped,
-            direction_now:Direction::Stopped,
+            direction_next: rand::random(), //Direction::Stopped,
+            direction_now: Direction::Stopped,
+            //direction_next: self.segments.last().unwrap().direction_now,
+            //direction_now: Direction::Stopped,
             glyph: 3,
         })
+    }
+
+    pub fn eat(&mut self, item: &WMCItem) {
+        match item.item_type {
+            //serpent_item::ItemType::ShorterSnake => {
+            //    if let Some(_s) = self.segments.get(1) {
+            //        self.segments.pop();
+            //    }
+            //}
+            ItemType::NormalBonus => self.append(),
+            ItemType::Yummy => {
+                println!("yum")
+            },
+            ItemType::Startling => {
+                println!("aaaah!");
+                for mut s in &mut self.segments{
+                    s.direction_next = Direction::Stopped;
+                    s.direction_now = Direction::Stopped;
+                }
+
+            },
+
+            ItemType::Mystery => {
+                println!("mysterious")
+            }
+        }
     }
 }
 
