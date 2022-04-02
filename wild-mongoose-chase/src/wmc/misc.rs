@@ -1,5 +1,10 @@
-use crate::wmc::item::Item;
+//<<<<<<< HEAD
+//use crate::wmc::item::Item;
 use crate::wmc::player::{Direction, Player, Segment};
+//=======
+use crate::wmc::item::{Item, ItemType};
+//use crate::wmc::player::{Direction, Player};
+//>>>>>>> origin/art_and_breaking_things
 use bracket_lib::prelude::*;
 
 use crate::{FRAME_DURATION, HEIGHT, WIDTH};
@@ -10,7 +15,7 @@ pub struct State {
     player: Player,
     frame_time: f32,
     score: i32,
-    item: Item,
+    items: Vec<Item>,
     symbol: Option<u16>,
     mongeese: Vec<Mongoose>,
 }
@@ -24,7 +29,7 @@ impl State {
             player: Player::new(random.range(1, WIDTH), random.range(1, HEIGHT), None),
             frame_time: 0.0,
             score: 0,
-            item: Item::spawn(),
+            items: vec![Item::spawn()],
             symbol: None,
             mongeese: vec![Mongoose::spawn()],
         }
@@ -41,9 +46,10 @@ impl State {
             self.player = Player::new(random.range(1, WIDTH), random.range(1, HEIGHT), None);
         }
         self.score = 0;
-        self.item = Item::spawn();
+        self.items = vec![Item::spawn()];
         self.frame_time = 0.0;
         self.mode = GameMode::Playing;
+        self.mongeese = vec![Mongoose::spawn()];
     }
 
     fn main_menu(&mut self, ctx: &mut BTerm) {
@@ -175,7 +181,6 @@ impl State {
             }
         }
         self.player.render(ctx);
-        self.item.render(ctx);
         for mut m in self.mongeese.clone(){
             m.render(ctx);
             //if self.player.x == m.x && self.player.y == m.y{
@@ -188,12 +193,38 @@ impl State {
            //}
         }
 
-        if self.player.x == self.item.x && self.player.y == self.item.y {
-            self.player.append();
-            self.player.eat(&self.item);
+//<<<<<<< HEAD
+//       if self.player.x == self.item.x && self.player.y == self.item.y {
+//            self.player.append();
+//            self.player.eat(&self.item);
+//=======
+        for i in 0..self.items.len() {
+            let mut item = self.items[i];
+            item.render(ctx);
+//>>>>>>> origin/art_and_breaking_things
 
-            self.item = Item::spawn();
-            self.score += 1;
+            if self.player.x == item.x && self.player.y == item.y {
+                //self.player.append();
+                self.player.eat(&item);
+                if item.item_type == ItemType::Yummy {
+                    // offset egg from current positions so as to not immediately hatch/eat it
+                    let offset_x = match self.player.direction {
+                        Direction::Left => 1,
+                        Direction::Right => -1,
+                        _ => 0,};
+                    let offset_y = match self.player.direction{
+                        Direction::Up => 1,
+                        Direction::Down => -1,
+                        _ => 0,};
+                    let new_egg = Item::spawn_at(self.player.x + offset_x,
+                                                 self.player.y + offset_y,
+                                                 ItemType::Egg);
+                    self.items[i] = new_egg;
+                }else {
+                    self.items[i] = Item::spawn();
+                }
+                self.score += 1;
+            }
         }
     }
 }

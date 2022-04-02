@@ -135,7 +135,7 @@ impl Player {
                 Direction::Down => 243,
                 _ => 241,
             };
-            if !segment.is_alive{glyph_seg_idx=0;}
+            if !segment.is_alive{glyph_seg_idx=58;}
             ctx.set_fancy(
                 PointF::new(segment.x as f32, segment.y as f32),
                 1,
@@ -206,9 +206,13 @@ impl Player {
             //        self.segments.pop();
             //    }
             //}
-            ItemType::NormalBonus => self.append(),
+            ItemType::Egg => self.append(),
+            ItemType::NormalBonus => {
+                println!("increment score here")
+            },
             ItemType::Yummy => {
                 println!("yum")
+
             }
             ItemType::Startling => {
                 println!("aaaah!");

@@ -5,13 +5,14 @@ use rand::{
     Rng,
 };
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ItemType {
     NormalBonus,
     //ShorterSnake,
     Mystery,
     Yummy,
     Startling,
+    Egg,
 }
 
 impl Distribution<ItemType> for Standard {
@@ -43,12 +44,20 @@ impl Item {
             item_type: t,
         }
     }
+    pub fn spawn_at(x: i32, y: i32, item_type: ItemType) -> Self{
+        Self {
+            x,
+            y,
+            item_type
+        }
+    }
     pub fn get_glyph(&self) -> i32 {
         match self.item_type {
-            ItemType::NormalBonus => 15,
+            ItemType::NormalBonus => 227,
             ItemType::Startling => 225,
             ItemType::Yummy => 224,
             ItemType::Mystery => 3,
+            ItemType::Egg => 226,
         }
     }
     pub fn render(&mut self, ctx: &mut BTerm) {
