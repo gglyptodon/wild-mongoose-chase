@@ -1,19 +1,15 @@
-//<<<<<<< HEAD
-//use crate::wmc::item::Item;
 use crate::wmc::player::{Direction, Player, Segment};
-//=======
 use crate::wmc::item::{Item, ItemType};
-//use crate::wmc::player::{Direction, Player};
-//>>>>>>> origin/art_and_breaking_things
 use bracket_lib::prelude::*;
 
-use crate::{FRAME_DURATION, HEIGHT, WIDTH};
 use crate::wmc::mongoose::Mongoose;
+use crate::{FRAME_DURATION, HEIGHT, WIDTH};
 
 pub struct State {
     mode: GameMode,
     player: Player,
     frame_time: f32,
+    frame_time_mongoose:f32,
     score: i32,
     items: Vec<Item>,
     symbol: Option<u16>,
@@ -28,6 +24,7 @@ impl State {
             mode: GameMode::GameMenu,
             player: Player::new(random.range(1, WIDTH), random.range(1, HEIGHT), None),
             frame_time: 0.0,
+            frame_time_mongoose: 0.0,
             score: 0,
             items: vec![Item::spawn()],
             symbol: None,
@@ -48,6 +45,7 @@ impl State {
         self.score = 0;
         self.items = vec![Item::spawn()];
         self.frame_time = 0.0;
+        self.frame_time_mongoose = 0.0;
         self.mode = GameMode::Playing;
         self.mongeese = vec![Mongoose::spawn()];
     }
@@ -104,15 +102,23 @@ impl State {
     }
 
     fn play(&mut self, ctx: &mut BTerm) {
+
         self.player.x = self.player.segments.get(0).unwrap().x;
         self.player.y = self.player.segments.get(0).unwrap().y;
         ctx.cls_bg(DARK_GRAY);
         ctx.print(0, 0, format!("{}", self.score));
 
         self.frame_time += ctx.frame_time_ms;
+        self.frame_time_mongoose += ctx.frame_time_ms;
         if self.frame_time > FRAME_DURATION {
             self.frame_time = 0.0;
             self.player.gravity_and_move();
+            if self.frame_time_mongoose > 2.0 *FRAME_DURATION{
+            for mut m in &mut self.mongeese{
+               m.movement(self.player.segments.last().unwrap().x, self.player.segments.last().unwrap().y);
+            }
+                self.frame_time_mongoose = 0.0;
+            }
         }
         if let Some(VirtualKeyCode::Left) = ctx.key {
             if self.player.direction == Direction::Right {
@@ -157,70 +163,56 @@ impl State {
         if self.player.x >= WIDTH {
             self.mode = GameMode::GameOver
         }
-        let tmp =self.player.segments.clone();
+        let tmp = self.player.segments.clone();
         let head = tmp.get(0).unwrap();
         let tail = tmp.last().unwrap();
-        for   s in self.player.segments.iter_mut().skip(1) {
-            if head.x == s.x && head.y == s.y && tail.direction_now!=Direction::Stopped
-
-
-           // if self.player.segments.get(0).unwrap().x == s.x
-           //     && self.player.segments.get(0).unwrap().y == s.y
-           //     && self.player.segments.last().unwrap().direction_now != Direction::Stopped
+        for s in self.player.segments.iter_mut().skip(1) {
+            if head.x == s.x && head.y == s.y && tail.direction_now != Direction::Stopped
             {
                 self.mode = GameMode::GameOver;
             }
-            for m in &self.mongeese{//todo
-                if m.x == s.x && m.y == s.y{
-                    s.y+=1;s.x+=0;
-                    s.is_alive=false;
-                   // s.direction_now =Direction::Stopped;
-                   //s.direction_next = rand::random();
-                    //println!("goo{:?}",s);
+            for m in &mut self.mongeese {
+                //todo
+
+                if m.x == s.x && m.y == s.y {
+                    s.is_alive = false;
                 }
             }
         }
+
         self.player.render(ctx);
-        for mut m in self.mongeese.clone(){
+        for mut m in self.mongeese.clone() {
             m.render(ctx);
-            //if self.player.x == m.x && self.player.y == m.y{
-            //    let filtered  = self.player.segments
-            //        .iter_mut().skip(1)
-            //       .filter(|s|s.x == m.x && s.y == m.y).map(|s|{println!("{}",s.glyph);s.glyph=2});
-            //    println!("{:#?}", filtered);
-               //     println!("hit",);
-                    //segment.glyph=2;
-           //}
+            if head.x == m.x && head.y == m.y{
+                self.mode=GameMode::GameOver
+            }
         }
 
-//<<<<<<< HEAD
-//       if self.player.x == self.item.x && self.player.y == self.item.y {
-//            self.player.append();
-//            self.player.eat(&self.item);
-//=======
         for i in 0..self.items.len() {
             let mut item = self.items[i];
             item.render(ctx);
-//>>>>>>> origin/art_and_breaking_things
 
             if self.player.x == item.x && self.player.y == item.y {
-                //self.player.append();
                 self.player.eat(&item);
                 if item.item_type == ItemType::Yummy {
                     // offset egg from current positions so as to not immediately hatch/eat it
                     let offset_x = match self.player.direction {
                         Direction::Left => 1,
                         Direction::Right => -1,
-                        _ => 0,};
-                    let offset_y = match self.player.direction{
+                        _ => 0,
+                    };
+                    let offset_y = match self.player.direction {
                         Direction::Up => 1,
                         Direction::Down => -1,
-                        _ => 0,};
-                    let new_egg = Item::spawn_at(self.player.x + offset_x,
-                                                 self.player.y + offset_y,
-                                                 ItemType::Egg);
+                        _ => 0,
+                    };
+                    let new_egg = Item::spawn_at(
+                        self.player.x + offset_x,
+                        self.player.y + offset_y,
+                        ItemType::Egg,
+                    );
                     self.items[i] = new_egg;
-                }else {
+                } else {
                     self.items[i] = Item::spawn();
                 }
                 self.score += 1;
