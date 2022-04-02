@@ -1,7 +1,6 @@
-
 use bracket_lib::prelude::*;
 use wild_mongoose_chase::wmc::misc;
-use wild_mongoose_chase::{HEIGHT,WIDTH};
+use wild_mongoose_chase::{HEIGHT, WIDTH};
 embedded_resource!(TILE_FONT, "../resources/tiles4.png");
 
 fn main() -> BResult<()> {
@@ -9,7 +8,7 @@ fn main() -> BResult<()> {
     let context = BTermBuilder::new()
         .with_font("tiles4.png", 32, 32)
         .with_simple_console(WIDTH, HEIGHT, "tiles4.png")
-        .with_fancy_console(WIDTH,HEIGHT, "tiles4.png")
+        .with_fancy_console(WIDTH, HEIGHT, "tiles4.png")
         .with_title("🐍 💨   Wild Mongoose Chase  💨 ")
         .with_fps_cap(30.0)
         //.with_tile_dimensions(16, 16)

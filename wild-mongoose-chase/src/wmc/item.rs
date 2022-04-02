@@ -6,17 +6,20 @@ use rand::{
 };
 
 #[derive(Debug, Copy, Clone)]
-pub enum ItemType{
+pub enum ItemType {
     NormalBonus,
-    ShorterSnake,
+    //ShorterSnake,
     Mystery,
+    Yummy,
+    Startling,
 }
 
-impl Distribution<ItemType> for Standard{
+impl Distribution<ItemType> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> ItemType {
-        match rng.gen_range(0..=2) {
+        match rng.gen_range(0..=3) {
             0 => ItemType::NormalBonus,
-            1 => ItemType::ShorterSnake,
+            1 => ItemType::Yummy,
+            2 => ItemType::Startling,
             _ => ItemType::Mystery,
         }
     }
@@ -30,23 +33,22 @@ pub struct Item {
     pub(crate) item_type: ItemType,
 }
 
-
 impl Item {
     pub fn spawn() -> Self {
         let mut random = RandomNumberGenerator::new();
-        let t:ItemType =  rand::random();
+        let t: ItemType = rand::random();
         Self {
             x: random.range(1, WIDTH),
             y: random.range(1, HEIGHT),
             item_type: t,
         }
-
     }
-    pub fn get_glyph(&self) -> i32{
-        match self.item_type{
+    pub fn get_glyph(&self) -> i32 {
+        match self.item_type {
             ItemType::NormalBonus => 15,
-            ItemType::ShorterSnake => 48,
-            ItemType::Mystery => 3
+            ItemType::Startling => 225,
+            ItemType::Yummy => 224,
+            ItemType::Mystery => 3,
         }
     }
     pub fn render(&mut self, ctx: &mut BTerm) {
@@ -57,9 +59,9 @@ impl Item {
             1,
             Degrees::new(0.0),
             PointF::new(1.0, 1.0),
-            BLACK,
-            DARK_BLUE,
-            self.get_glyph(),//.glyph, //self.glyph, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
+            WHITE,
+            GREY,
+            self.get_glyph(), //.glyph, //self.glyph, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
         );
         ctx.set_active_console(0);
     }

@@ -19,7 +19,7 @@ impl State {
 
         Self {
             mode: GameMode::GameMenu,
-            player: Player::new( random.range(1,WIDTH), random.range(1,HEIGHT), None),
+            player: Player::new(random.range(1, WIDTH), random.range(1, HEIGHT), None),
             frame_time: 0.0,
             score: 0,
             item: Item::spawn(),
@@ -29,9 +29,13 @@ impl State {
     fn restart(&mut self) {
         let mut random = RandomNumberGenerator::new();
         if let Some(symbol) = self.symbol {
-            self.player =  Player::new( random.range(1,WIDTH), random.range(1,HEIGHT), Some(symbol));
+            self.player = Player::new(
+                random.range(1, WIDTH),
+                random.range(1, HEIGHT),
+                Some(symbol),
+            );
         } else {
-            self.player = Player::new( random.range(1,WIDTH), random.range(1,HEIGHT), None);
+            self.player = Player::new(random.range(1, WIDTH), random.range(1, HEIGHT), None);
         }
         self.score = 0;
         self.item = Item::spawn();
@@ -156,9 +160,11 @@ impl State {
         self.item.render(ctx);
 
         if self.player.x == self.item.x && self.player.y == self.item.y {
-            self.player.append();
+            //self.player.append();
+            self.player.eat(&self.item);
+
             self.item = Item::spawn();
-            self.score+=1;
+            self.score += 1;
         }
     }
 }
