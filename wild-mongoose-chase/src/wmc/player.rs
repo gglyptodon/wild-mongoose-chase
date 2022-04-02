@@ -1,5 +1,25 @@
 use bracket_lib::prelude::*;
 
+use rand::{
+    distributions::{Distribution, Standard},
+    Rng,
+};
+use wmc::item::Item as WMCItem;
+use wmc::item::ItemType;
+
+use crate::wmc;
+
+impl Distribution<Direction> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Direction {
+        match rng.gen_range(0..=3) {
+            0 => Direction::Up,
+            1 => Direction::Down,
+            2 => Direction::Left,
+            _ => Direction::Right,
+        }
+    }
+}
+
 #[derive(Copy, Clone, Debug)]
 pub struct Segment {
     pub x: i32,
@@ -112,7 +132,7 @@ impl Player {
                 Direction::Up => 243,
                 Direction::Down => 243,
                 _ => 241,
-        };
+            };
             ctx.set_fancy(
                 PointF::new(segment.x as f32, segment.y as f32),
                 1,
@@ -167,10 +187,44 @@ impl Player {
         self.segments.push(Segment {
             x: next_seg_x,
             y: next_seg_y,
-            direction_next: self.segments.last().unwrap().direction_now,
+            direction_next: rand::random(), //Direction::Stopped,
             direction_now: Direction::Stopped,
+            //direction_next: self.segments.last().unwrap().direction_now,
+            //direction_now: Direction::Stopped,
             glyph: 3,
         })
+    }
+
+    pub fn eat(&mut self, item: &WMCItem) {
+        match item.item_type {
+            //serpent_item::ItemType::ShorterSnake => {
+            //    if let Some(_s) = self.segments.get(1) {
+            //        self.segments.pop();
+            //    }
+            //}
+            ItemType::NormalBonus => self.append(),
+            ItemType::Yummy => {
+                println!("yum")
+            }
+            ItemType::Startling => {
+                println!("aaaah!");
+                let tmp = self.segments.clone();
+                for (i, s) in self.segments.iter_mut().enumerate().skip(2) {
+                    //step back from the noise
+
+                    //s.direction_next = Direction::Stopped;
+                    //s.direction_now = Direction::Stopped;
+                    //s.y = tmp.get(i-1).unwrap().y;
+                    // s.x = tmp.get(i-1).unwrap().x;
+
+                    //s.y -=1;
+                }
+            }
+
+            ItemType::Mystery => {
+                println!("mysterious")
+            }
+        }
     }
 }
 
