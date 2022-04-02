@@ -10,7 +10,7 @@ pub struct State {
     player: Player,
     frame_time: f32,
     score: i32,
-    item: Item,
+    items: Vec<Item>,
     symbol: Option<u16>,
     mongeese: Vec<Mongoose>,
 }
@@ -24,7 +24,7 @@ impl State {
             player: Player::new(random.range(1, WIDTH), random.range(1, HEIGHT), None),
             frame_time: 0.0,
             score: 0,
-            item: Item::spawn(),
+            items: vec![Item::spawn()],
             symbol: None,
             mongeese: vec![Mongoose::spawn()],
         }
@@ -41,9 +41,10 @@ impl State {
             self.player = Player::new(random.range(1, WIDTH), random.range(1, HEIGHT), None);
         }
         self.score = 0;
-        self.item = Item::spawn();
+        self.items = vec![Item::spawn()];
         self.frame_time = 0.0;
         self.mode = GameMode::Playing;
+        self.mongeese = vec![Mongoose::spawn()];
     }
 
     fn main_menu(&mut self, ctx: &mut BTerm) {
@@ -160,17 +161,21 @@ impl State {
             }
         }
         self.player.render(ctx);
-        self.item.render(ctx);
         for mut m in self.mongeese.clone(){
             m.render(ctx);
         }
 
-        if self.player.x == self.item.x && self.player.y == self.item.y {
-            //self.player.append();
-            self.player.eat(&self.item);
+        for i in 0..self.items.len() {
+            let mut item = self.items[i];
+            item.render(ctx);
 
-            self.item = Item::spawn();
-            self.score += 1;
+            if self.player.x == item.x && self.player.y == item.y {
+                //self.player.append();
+                self.player.eat(&item);
+
+                self.items[i] = Item::spawn();
+                self.score += 1;
+            }
         }
     }
 }
