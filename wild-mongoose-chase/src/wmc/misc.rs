@@ -3,6 +3,7 @@ use crate::wmc::player::{Direction, Player};
 use bracket_lib::prelude::*;
 
 use crate::{FRAME_DURATION, HEIGHT, WIDTH};
+use crate::wmc::mongoose::Mongoose;
 
 pub struct State {
     mode: GameMode,
@@ -11,6 +12,7 @@ pub struct State {
     score: i32,
     item: Item,
     symbol: Option<u16>,
+    mongeese: Vec<Mongoose>,
 }
 
 impl State {
@@ -24,6 +26,7 @@ impl State {
             score: 0,
             item: Item::spawn(),
             symbol: None,
+            mongeese: vec![Mongoose::spawn()],
         }
     }
     fn restart(&mut self) {
@@ -158,6 +161,9 @@ impl State {
         }
         self.player.render(ctx);
         self.item.render(ctx);
+        for mut m in self.mongeese.clone(){
+            m.render(ctx);
+        }
 
         if self.player.x == self.item.x && self.player.y == self.item.y {
             //self.player.append();
