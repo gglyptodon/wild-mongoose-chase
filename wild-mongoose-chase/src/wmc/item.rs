@@ -44,12 +44,8 @@ impl Item {
             item_type: t,
         }
     }
-    pub fn spawn_at(x: i32, y: i32, item_type: ItemType) -> Self{
-        Self {
-            x,
-            y,
-            item_type
-        }
+    pub fn spawn_at(x: i32, y: i32, item_type: ItemType) -> Self {
+        Self { x, y, item_type }
     }
     pub fn get_glyph(&self) -> i32 {
         match self.item_type {

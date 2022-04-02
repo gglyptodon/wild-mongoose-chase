@@ -1,9 +1,9 @@
+use crate::wmc::player::{Direction, Player, Segment};
 use crate::wmc::item::{Item, ItemType};
-use crate::wmc::player::{Direction, Player};
 use bracket_lib::prelude::*;
 
-use crate::{FRAME_DURATION, HEIGHT, WIDTH};
 use crate::wmc::mongoose::Mongoose;
+use crate::{FRAME_DURATION, HEIGHT, WIDTH};
 
 pub struct State {
     mode: GameMode,
@@ -105,6 +105,7 @@ impl State {
     }
 
     fn play(&mut self, ctx: &mut BTerm) {
+
         self.player.x = self.player.segments.get(0).unwrap().x;
         self.player.y = self.player.segments.get(0).unwrap().y;
         ctx.cls_bg(DARK_GRAY);
@@ -114,14 +115,17 @@ impl State {
         self.frame_time_mongoose += ctx.frame_time_ms;
         if self.frame_time > FRAME_DURATION {
             self.frame_time = 0.0;
-
-            self.occupied = self.player.gravity_and_move(&self.occupied);
+<<<<<<< HEAD
+            self.player.gravity_and_move();
             if self.frame_time_mongoose > 2.0 *FRAME_DURATION{
-                for mut m in &mut self.mongeese{
-                    m.movement(self.player.segments.last().unwrap().x, self.player.segments.last().unwrap().y);
-                }
-                    self.frame_time_mongoose = 0.0;
+            for mut m in &mut self.mongeese{
+               m.movement(self.player.segments.last().unwrap().x, self.player.segments.last().unwrap().y);
             }
+                self.frame_time_mongoose = 0.0;
+            }
+=======
+            self.player.gravity_and_move(&mut self.occupied);
+>>>>>>> origin/art_and_breaking_things
         }
         if let Some(VirtualKeyCode::Left) = ctx.key {
             if self.player.direction == Direction::Right {
@@ -172,8 +176,7 @@ impl State {
         for s in self.player.segments.iter_mut().skip(1) {
             if head.x == s.x && head.y == s.y && tail.direction_now != Direction::Stopped
             {
-                //self.mode = GameMode::GameOver;
-                println!("collided with own segment");
+                self.mode = GameMode::GameOver;
             }
             for m in &mut self.mongeese {
                 //todo
@@ -183,8 +186,9 @@ impl State {
                 }
             }
         }
+
         self.player.render(ctx);
-        for mut m in self.mongeese.clone(){
+        for mut m in self.mongeese.clone() {
             m.render(ctx);
             if head.x == m.x && head.y == m.y{
                 self.mode=GameMode::GameOver
@@ -196,7 +200,6 @@ impl State {
             item.render(ctx);
 
             if self.player.x == item.x && self.player.y == item.y {
-                
                 self.player.eat(&item);
                 if item.item_type == ItemType::Yummy {
                     // offset egg from current positions so as to not immediately hatch/eat it
