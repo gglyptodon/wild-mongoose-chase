@@ -1,5 +1,22 @@
 use bracket_lib::prelude::*;
 
+use rand::{
+    distributions::{Distribution, Standard},
+    Rng,
+};
+
+impl Distribution<Direction> for Standard{
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Direction {
+        match rng.gen_range(0..=3) {
+            0 => Direction::Up,
+            1 => Direction::Down,
+            2 => Direction::Left,
+            _ => Direction::Right
+        }
+    }
+}
+
+
 #[derive(Copy, Clone, Debug)]
 pub struct Segment {
     pub x: i32,
@@ -106,7 +123,7 @@ impl Player {
         );
         for segment in self.segments.clone().iter().skip(1) {
             ctx.set_fancy(
-                PointF::new(segment.x as f32, segment.y as f32),
+                PointF::new(segment.x as f32, segment.y  as f32),
                 1,
                 Degrees::new(0.0),
                 PointF::new(1.0, 1.0),
@@ -145,7 +162,7 @@ impl Player {
 
         let seg = self.segments.clone();
         for (i, s) in self.segments.iter_mut().enumerate().skip(1) {
-            s.update_direction(seg.get(i - 1).unwrap())
+            s.update_direction(seg.get(i -1).unwrap())
         }
     }
     pub fn append(&mut self) {
@@ -159,8 +176,8 @@ impl Player {
         self.segments.push(Segment {
             x: next_seg_x,
             y: next_seg_y,
-            direction_next: Direction::Stopped,
-            direction_now: Direction::Stopped,
+            direction_next: rand::random(),//Direction::Stopped,
+            direction_now:Direction::Stopped,
             glyph: 3,
         })
     }
