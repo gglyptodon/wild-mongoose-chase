@@ -27,6 +27,7 @@ impl Segment {
     }
 
     pub fn update_direction(&mut self, previous: &Segment) {
+        // move according to direction now
         match self.direction_now {
             Direction::Left => self.x -= 1,
             Direction::Right => self.x += 1,
@@ -80,13 +81,13 @@ impl Player {
 
     pub fn render(&mut self, ctx: &mut BTerm) {
         let mut glyph_idx = match self.direction {
-            Direction::Left => 17,
-            Direction::Right => 16,
-            Direction::Up => 4,
-            Direction::Down => 4,
-            _ => 16,
+            Direction::Left => 244,
+            Direction::Right => 245,
+            Direction::Up => 246,
+            Direction::Down => 246,
+            _ => 244,
         };
-
+        // player select override?
         if let Some(symbol) = self.symbol {
             glyph_idx = symbol;
         }
@@ -105,6 +106,13 @@ impl Player {
             glyph_idx,
         );
         for segment in self.segments.clone().iter().skip(1) {
+            let glyph_seg_idx = match segment.direction_now {
+                Direction::Left => 241,
+                Direction::Right => 242,
+                Direction::Up => 243,
+                Direction::Down => 243,
+                _ => 241,
+        };
             ctx.set_fancy(
                 PointF::new(segment.x as f32, segment.y as f32),
                 1,
@@ -112,7 +120,7 @@ impl Player {
                 PointF::new(1.0, 1.0),
                 WHITE,
                 DARK_GRAY,
-                7, //glyph_idx, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
+                glyph_seg_idx, //glyph_idx, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
             );
         }
         ctx.set_active_console(0);
@@ -159,7 +167,7 @@ impl Player {
         self.segments.push(Segment {
             x: next_seg_x,
             y: next_seg_y,
-            direction_next: Direction::Stopped,
+            direction_next: self.segments.last().unwrap().direction_now,
             direction_now: Direction::Stopped,
             glyph: 3,
         })
