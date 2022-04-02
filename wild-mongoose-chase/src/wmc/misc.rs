@@ -110,7 +110,8 @@ impl State {
         self.frame_time += ctx.frame_time_ms;
         if self.frame_time > FRAME_DURATION {
             self.frame_time = 0.0;
-            self.player.gravity_and_move(&mut self.occupied);
+
+           self.occupied = self.player.gravity_and_move(&self.occupied);
         }
         if let Some(VirtualKeyCode::Left) = ctx.key {
             if self.player.direction == Direction::Right {
@@ -160,7 +161,8 @@ impl State {
                 && self.player.segments.get(0).unwrap().y == s.y
                 && self.player.segments.last().unwrap().direction_now != Direction::Stopped
             {
-                self.mode = GameMode::GameOver;
+                //self.mode = GameMode::GameOver;
+                println!("collided with own segment");
             }
         }
         self.player.render(ctx);

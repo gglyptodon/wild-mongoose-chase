@@ -161,39 +161,32 @@ impl Player {
         ctx.set_active_console(0);
     }
 
-    pub fn gravity_and_move(&mut self, occupied: &mut Vec<(i32, i32)>) {
-        /*match self.direction {
-            Direction::Stopped => {
-                self.segments.get_mut(0).unwrap().direction_next = Direction::Stopped
-            }
-            Direction::Left => {
-                self.segments.get_mut(0).unwrap().x -= 1;
-                self.segments.get_mut(0).unwrap().direction_now = Direction::Left;
-            }
-            Direction::Right => {
-                self.segments.get_mut(0).unwrap().x += 1;
-                self.segments.get_mut(0).unwrap().direction_now = Direction::Right;
-            }
-            Direction::Up => {
-                self.segments.get_mut(0).unwrap().y -= 1;
-                self.segments.get_mut(0).unwrap().direction_now = Direction::Up;
-            }
-            Direction::Down => {
-                self.segments.get_mut(0).unwrap().y += 1;
-                self.segments.get_mut(0).unwrap().direction_now = Direction::Down;
-            }
-        }*/
+    pub fn gravity_and_move(&mut self, occupied: &Vec<(i32, i32)>)->Vec<(i32,i32)> {
+        let mut result_vec:Vec<(i32, i32)> = vec![];
         let mut seg0 = self.segments.get_mut(0).unwrap();
         seg0.direction_now = self.direction;
         seg0.take_move();
+        println!("{:?}", occupied);
+        if occupied.contains(&(seg0.x, seg0.y)){
+            seg0.un_move(self.direction);
+            println!("unmoving head");
+        }
 
+        //occupied = &mut vec![(seg0.x, seg0.y)];
+        result_vec.push((seg0.x, seg0.y));
         self.frame += 1;
         self.frame %= 2;
 
         let seg = self.segments.clone();
         for (i, s) in self.segments.iter_mut().enumerate().skip(1) {
-            s.update_direction(seg.get(i - 1).unwrap())
+            let direction_old = s.direction_now.clone();
+            s.update_direction(seg.get(i - 1).unwrap());
+            if occupied.contains(&(s.x, s.y)){
+                s.un_move(direction_old);
+            }
+            result_vec.push((s.x, s.y));
         }
+        result_vec
     }
     pub fn append(&mut self) {
         self.length += 1;
