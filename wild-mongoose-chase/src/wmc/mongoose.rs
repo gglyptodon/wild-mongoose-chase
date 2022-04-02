@@ -20,6 +20,8 @@ pub struct Mongoose {
     pub glyph: usize,
     //frame: usize,
 }
+
+
 impl Mongoose{
     pub fn spawn() -> Self {
         let mut random = RandomNumberGenerator::new();

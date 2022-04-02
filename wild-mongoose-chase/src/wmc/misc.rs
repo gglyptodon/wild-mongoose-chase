@@ -1,5 +1,5 @@
 use crate::wmc::item::Item;
-use crate::wmc::player::{Direction, Player};
+use crate::wmc::player::{Direction, Player, Segment};
 use bracket_lib::prelude::*;
 
 use crate::{FRAME_DURATION, HEIGHT, WIDTH};
@@ -151,22 +151,45 @@ impl State {
         if self.player.x >= WIDTH {
             self.mode = GameMode::GameOver
         }
-        for s in self.player.segments.iter().skip(1) {
-            if self.player.segments.get(0).unwrap().x == s.x
-                && self.player.segments.get(0).unwrap().y == s.y
-                && self.player.segments.last().unwrap().direction_now != Direction::Stopped
+        let tmp =self.player.segments.clone();
+        let head = tmp.get(0).unwrap();
+        let tail = tmp.last().unwrap();
+        for   s in self.player.segments.iter_mut().skip(1) {
+            if head.x == s.x && head.y == s.y && tail.direction_now!=Direction::Stopped
+
+
+           // if self.player.segments.get(0).unwrap().x == s.x
+           //     && self.player.segments.get(0).unwrap().y == s.y
+           //     && self.player.segments.last().unwrap().direction_now != Direction::Stopped
             {
                 self.mode = GameMode::GameOver;
+            }
+            for m in &self.mongeese{//todo
+                if m.x == s.x && m.y == s.y{
+                    s.y+=1;s.x+=0;
+                    s.is_alive=false;
+                   // s.direction_now =Direction::Stopped;
+                   //s.direction_next = rand::random();
+                    //println!("goo{:?}",s);
+                }
             }
         }
         self.player.render(ctx);
         self.item.render(ctx);
         for mut m in self.mongeese.clone(){
             m.render(ctx);
+            //if self.player.x == m.x && self.player.y == m.y{
+            //    let filtered  = self.player.segments
+            //        .iter_mut().skip(1)
+            //       .filter(|s|s.x == m.x && s.y == m.y).map(|s|{println!("{}",s.glyph);s.glyph=2});
+            //    println!("{:#?}", filtered);
+               //     println!("hit",);
+                    //segment.glyph=2;
+           //}
         }
 
         if self.player.x == self.item.x && self.player.y == self.item.y {
-            //self.player.append();
+            self.player.append();
             self.player.eat(&self.item);
 
             self.item = Item::spawn();
