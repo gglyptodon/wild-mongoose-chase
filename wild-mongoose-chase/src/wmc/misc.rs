@@ -66,14 +66,18 @@ impl State {
     }
 
     fn main_menu(&mut self, ctx: &mut BTerm) {
-        ctx.cls_bg(DARK_GREEN);
-        ctx.print_centered(2, "Main Menu");
-        ctx.print_centered(6, "Player (S)elect");
-        ctx.print_centered(8, "(P)lay");
-        ctx.print_centered(10, "(Q)uit");
+        ctx.cls_bg(DARK_MAGENTA);
+        ctx.print_centered(2, "- Wild Mongoose Chase -");
+        ctx.print_centered(12, "(P)lay");
+        ctx.print_centered(14, "(Q)uit");
+        ctx.print_centered(4, "Mongeese are dangerous!");
+        ctx.print_centered(5, "They are hiding in the weeds - ");
+        ctx.print_centered(6, "Don't let the grass grow!");
+        //ctx.post_scanlines = true;
+
+
         if let Some(k) = ctx.key {
             match k {
-                VirtualKeyCode::S => self.mode = GameMode::PlayerSelect,
                 VirtualKeyCode::P => self.restart(),
                 VirtualKeyCode::Q => ctx.quitting = true,
                 _ => {}
@@ -82,8 +86,11 @@ impl State {
     }
     fn dead(&mut self, ctx: &mut BTerm) {
         ctx.cls();
+        ctx.cls_bg(BLACK);
+        ctx.set_active_console(1);
+
+
         ctx.print_centered(2, "Game Over");
-        //ctx.print(2, 4, format!("Score:{}", self.score));
         ctx.print(
             2,
             4,
@@ -98,30 +105,10 @@ impl State {
             ),
         );
 
-        ctx.print_centered(6, "Player (S)elect");
         ctx.print_centered(9, "(P)lay again");
         ctx.print_centered(10, "(Q)uit");
         if let Some(k) = ctx.key {
             match k {
-                VirtualKeyCode::S => self.mode = GameMode::PlayerSelect,
-
-                VirtualKeyCode::P => self.restart(),
-                VirtualKeyCode::Q => ctx.quitting = true,
-                _ => {}
-            }
-        }
-    }
-    fn player_select(&mut self, ctx: &mut BTerm) {
-        ctx.cls_bg(DARK_RED);
-        ctx.print_centered(2, "Player Select");
-        ctx.print_centered(4, "1: [☺], 2: [☻]");
-        ctx.print_centered(8, "(P)lay again");
-
-        ctx.print_centered(10, "(Q)uit");
-        if let Some(k) = ctx.key {
-            match k {
-                VirtualKeyCode::Key1 => self.symbol = Some(1),
-                VirtualKeyCode::Key2 => self.symbol = Some(2),
 
                 VirtualKeyCode::P => self.restart(),
                 VirtualKeyCode::Q => ctx.quitting = true,
@@ -135,7 +122,6 @@ impl State {
         self.player.y = self.player.segments.get(0).unwrap().y;
 
         ctx.cls_bg(DARK_GRAY);
-        //ctx.print(0, 0, format!("{}", self.score));
         ctx.print(
             0,
             0,
@@ -327,7 +313,6 @@ impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
         match self.mode {
             GameMode::GameMenu => self.main_menu(ctx),
-            GameMode::PlayerSelect => self.player_select(ctx),
             GameMode::Playing => self.play(ctx),
             GameMode::GameOver => self.dead(ctx),
         }
@@ -336,7 +321,6 @@ impl GameState for State {
 
 enum GameMode {
     GameMenu,
-    PlayerSelect,
     Playing,
     GameOver,
 }
