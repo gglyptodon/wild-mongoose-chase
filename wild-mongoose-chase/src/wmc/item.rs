@@ -5,7 +5,6 @@ use rand::{
     Rng,
 };
 use std::collections::HashSet;
-use std::thread::spawn;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ItemType {
@@ -55,14 +54,14 @@ impl Item {
         if t != ItemType::Grains {
             Self {
                 x: random.range(1, WIDTH),
-                y: random.range(1, HEIGHT),
+                y: random.range(2, HEIGHT),
                 item_type: t,
                 timer: None,
             }
         } else {
             Self {
                 x: random.range(1, WIDTH),
-                y: random.range(1, HEIGHT),
+                y: random.range(2, HEIGHT),
                 item_type: t,
                 timer: Some(GRAIN_TO_WEEDS_TIME),
             }
