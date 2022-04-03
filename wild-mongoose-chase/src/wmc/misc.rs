@@ -255,6 +255,7 @@ impl State {
 
             if self.player.x == item.x && self.player.y == item.y {
                 self.player.eat(&item);
+
                 if item.item_type == ItemType::Yummy {
                     // offset egg from current positions so as to not immediately hatch/eat it
                     let offset_x = match self.player.direction {
@@ -274,7 +275,8 @@ impl State {
                     );
                     self.items[i] = new_egg;
                 } else {
-                    self.items[i] = Item::spawn();
+                    if item.item_type !=ItemType::Weeds{
+                    self.items[i] = Item::spawn();}
                 }
                 self.score += 1;
             }
