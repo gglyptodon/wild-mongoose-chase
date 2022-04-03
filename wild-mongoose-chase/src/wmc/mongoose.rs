@@ -32,6 +32,15 @@ impl Mongoose {
             glyph: 55,
         }
     }
+    pub fn spawn_at(x: i32, y: i32) -> Self {
+        let mut random = RandomNumberGenerator::new();
+        Self {
+            x,
+            y,
+            direction: rand::random(),
+            glyph: 55,
+        }
+    }
 
     pub fn render(&mut self, ctx: &mut BTerm) {
         ctx.set_active_console(1);
@@ -63,7 +72,7 @@ impl Mongoose {
                 self.direction = Direction::Left
             }
         } else {
-           if distance_y > 0 {
+            if distance_y > 0 {
                 self.direction = Direction::Down
             } else if distance_y < 0 {
                 self.direction = Direction::Up
@@ -77,14 +86,12 @@ impl Mongoose {
                 if self.x < 1 {
                     self.direction = Direction::Right; //rand::random();
                 }
-
             }
             Direction::Right => {
                 self.x += 1;
                 if self.x >= WIDTH {
                     self.direction = Direction::Left; //rand::random();
                 }
-
             }
             Direction::Up => {
                 self.y -= 1;
@@ -99,6 +106,5 @@ impl Mongoose {
                 }
             }
         }
-
     }
 }

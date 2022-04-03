@@ -7,18 +7,19 @@ use rand::{
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ItemType {
-    NormalBonus,
+    Grains,
     //ShorterSnake,
     Mystery,
-    Yummy,
+    Yummy, // turns to weeds after GRAIN_TO_WEEDS_TIME seconds.
     Startling,
     Egg,
+    Weeds, //spawns mongoose after MONGOOSE_SPAWN_TIME seconds.
 }
 
 impl Distribution<ItemType> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> ItemType {
         match rng.gen_range(0..=3) {
-            0 => ItemType::NormalBonus,
+            0 => ItemType::Grains,
             1 => ItemType::Yummy,
             2 => ItemType::Startling,
             _ => ItemType::Mystery,
@@ -32,28 +33,54 @@ pub struct Item {
     pub(crate) y: i32,
     //glyph: i32,
     pub(crate) item_type: ItemType,
+    pub(crate) timer: Option<f32>,
 }
 
 impl Item {
     pub fn spawn() -> Self {
         let mut random = RandomNumberGenerator::new();
         let t: ItemType = rand::random();
-        Self {
-            x: random.range(1, WIDTH),
-            y: random.range(1, HEIGHT),
-            item_type: t,
+        if t != ItemType::Grains {
+            Self {
+                x: random.range(1, WIDTH),
+                y: random.range(1, HEIGHT),
+                item_type: t,
+                timer: None,
+            }
+        } else {
+            Self {
+                x: random.range(1, WIDTH),
+                y: random.range(1, HEIGHT),
+                item_type: t,
+                timer: Some(100.0),
+            }
         }
     }
     pub fn spawn_at(x: i32, y: i32, item_type: ItemType) -> Self {
-        Self { x, y, item_type }
+        if item_type == ItemType::Grains {
+            Self {
+                x,
+                y,
+                item_type,
+                timer: Some(10.0),
+            }
+        } else {
+            Self {
+                x,
+                y,
+                item_type,
+                timer: None,
+            }
+        }
     }
     pub fn get_glyph(&self) -> i32 {
         match self.item_type {
-            ItemType::NormalBonus => 227,
+            ItemType::Grains => 227,
             ItemType::Startling => 225,
             ItemType::Yummy => 224,
             ItemType::Mystery => 3,
             ItemType::Egg => 226,
+            ItemType::Weeds => 5,
         }
     }
     pub fn render(&mut self, ctx: &mut BTerm) {
