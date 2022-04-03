@@ -3,7 +3,7 @@ use crate::wmc::player::{Direction, Player};
 use bracket_lib::prelude::*;
 
 use crate::wmc::mongoose::Mongoose;
-use crate::{FRAME_DURATION, HEIGHT, WIDTH};
+use crate::{BETWEEN_MONGOOSE_TIME, FRAME_DURATION, HEIGHT, MONGOOSE_WARN_TIME, WIDTH};
 
 pub struct State {
     mode: GameMode,
@@ -161,9 +161,13 @@ impl State {
                     if time <= 0.0 {
                         if i.item_type == ItemType::Grains {
                             i.item_type = ItemType::Weeds;
+                        } else if i.item_type == ItemType::Weeds{
+                            i.item_type = ItemType::DangerousWeeds;
+                            i.timer = Some(MONGOOSE_WARN_TIME);
                         } else {
                             self.mongeese.push(Mongoose::spawn_at(i.x, i.y));
-                            i.timer = Some(90.0);
+                            i.timer = Some(BETWEEN_MONGOOSE_TIME);
+                            i.item_type = ItemType::Weeds;
                         }
                     }
                 }
@@ -263,8 +267,10 @@ impl State {
                     );
                     self.items[i] = new_egg;
                 } else {
-                    if item.item_type !=ItemType::Weeds{
-                    self.items[i] = Item::spawn();}
+                    match item.item_type {
+                        ItemType::Weeds | ItemType::DangerousWeeds => {},
+                        _ => self.items[i] = Item::spawn(),
+                    }
                 }
                 self.score += 1;
             }

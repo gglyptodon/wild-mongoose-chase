@@ -1,4 +1,4 @@
-use crate::{HEIGHT, WIDTH};
+use crate::{GRAIN_TO_WEEDS_TIME, HEIGHT, WIDTH};
 use bracket_lib::prelude::*;
 use rand::{
     distributions::{Distribution, Standard},
@@ -13,7 +13,8 @@ pub enum ItemType {
     Yummy, // turns to weeds after GRAIN_TO_WEEDS_TIME seconds.
     Startling,
     Egg,
-    Weeds, //spawns mongoose after MONGOOSE_SPAWN_TIME seconds.
+    Weeds, //spawns DangerousWeeds after MONGOOSE_SPAWN_TIME seconds.
+    DangerousWeeds, //spawns mongoose after MONGOOSE_WARN_TIME seconds
 }
 
 impl Distribution<ItemType> for Standard {
@@ -52,7 +53,7 @@ impl Item {
                 x: random.range(1, WIDTH),
                 y: random.range(1, HEIGHT),
                 item_type: t,
-                timer: Some(100.0),
+                timer: Some(GRAIN_TO_WEEDS_TIME),
             }
         }
     }
@@ -62,7 +63,7 @@ impl Item {
                 x,
                 y,
                 item_type,
-                timer: Some(10.0),
+                timer: Some(GRAIN_TO_WEEDS_TIME),
             }
         } else {
             Self {
@@ -80,7 +81,8 @@ impl Item {
             ItemType::Yummy => 224,
             ItemType::Mystery => 3,
             ItemType::Egg => 226,
-            ItemType::Weeds => 5,
+            ItemType::Weeds => 228,
+            ItemType::DangerousWeeds => 229,
         }
     }
     pub fn render(&mut self, ctx: &mut BTerm) {
