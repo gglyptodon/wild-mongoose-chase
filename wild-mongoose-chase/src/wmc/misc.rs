@@ -1,8 +1,8 @@
-use std::collections::HashSet;
-use std::hash::Hash;
 use crate::wmc::item::{Item, ItemType};
 use crate::wmc::player::{Direction, Player, Segment};
 use bracket_lib::prelude::*;
+use std::collections::HashSet;
+use std::hash::Hash;
 
 use crate::wmc::mongoose::Mongoose;
 use crate::wmc::player::Direction::Stopped;
@@ -20,7 +20,7 @@ pub struct State {
     mongeese: Vec<Mongoose>,
     // holds (x, y) positions for everything the upcoming move could potentially collide with
     occupied: Vec<(i32, i32)>,
-   // holds (x, y) positions for everything
+    // holds (x, y) positions for everything
     occupied_all: HashSet<(i32, i32)>,
 }
 
@@ -41,7 +41,7 @@ impl State {
             symbol: None,
             mongeese: vec![mongoose.clone()], //Mongoose::spawn()],
             occupied: vec![],
-            occupied_all: HashSet::new()
+            occupied_all: HashSet::new(),
         }
     }
     fn restart(&mut self) {
@@ -75,7 +75,6 @@ impl State {
         ctx.print_centered(6, "Don't let the grass grow!");
         //ctx.post_scanlines = true;
 
-
         if let Some(k) = ctx.key {
             match k {
                 VirtualKeyCode::P => self.restart(),
@@ -89,27 +88,26 @@ impl State {
         ctx.cls_bg(BLACK);
         ctx.set_active_console(1);
 
-
         ctx.print_centered(2, "Game Over");
-        ctx.print(
-            2,
-            4,
-            format!(
-                "Score: {}",
-                self.player
-                    .segments
-                    .iter()
-                    .skip(1)
-                    .filter(|x| x.is_alive)
-                    .count()
-            ),
-        );
+        let duckling_bonus = 100
+            * self
+                .player
+                .segments
+                .iter()
+                .skip(1)
+                .filter(|x| x.is_alive)
+                .count();
+        ctx.print_centered(2,format!(
+                "Time score: {}", self.score));
+        ctx.print_centered(3, format!("+ Duckling Bonus: {}", duckling_bonus));
+        ctx.print_centered(5, format!("Total Score: {}", self.score + duckling_bonus as i32));
+
+
 
         ctx.print_centered(9, "(P)lay again");
         ctx.print_centered(10, "(Q)uit");
         if let Some(k) = ctx.key {
             match k {
-
                 VirtualKeyCode::P => self.restart(),
                 VirtualKeyCode::Q => ctx.quitting = true,
                 _ => {}
@@ -126,13 +124,14 @@ impl State {
             0,
             0,
             format!(
-                "Ducklings: {}",
+                "Ducklings: {}, Score: {}",
                 self.player
                     .segments
                     .iter()
                     .skip(1)
                     .filter(|x| x.is_alive)
-                    .count()
+                    .count(),
+                self.score
             ),
         );
         if self.player.direction != Direction::Stopped {
@@ -141,11 +140,13 @@ impl State {
             self.spawn_time_items += ctx.frame_time_ms;
         }
         if self.spawn_time_items > 50.0 * FRAME_DURATION {
-            self.items.push(Item::spawn_on_free_space(&self.occupied_all));
+            self.items
+                .push(Item::spawn_on_free_space(&self.occupied_all));
             self.spawn_time_items = 0.0;
         }
 
         if self.frame_time > FRAME_DURATION {
+            self.score += 1;
             //
 
             // adjust items via timer (grass to weeds, weeds to dangerous weeds and back)
@@ -156,7 +157,7 @@ impl State {
                     if time <= 0.0 {
                         if i.item_type == ItemType::Grains {
                             i.item_type = ItemType::Weeds;
-                        } else if i.item_type == ItemType::Weeds{
+                        } else if i.item_type == ItemType::Weeds {
                             i.item_type = ItemType::DangerousWeeds;
                             i.timer = Some(MONGOOSE_WARN_TIME);
                         } else {
@@ -242,7 +243,7 @@ impl State {
         }
         let mut remove_later: Vec<usize> = vec![];
         for i in 0..self.items.len() {
-            self.occupied_all.insert((self.items[i].x, self.items[i].y));  //lol
+            self.occupied_all.insert((self.items[i].x, self.items[i].y)); //lol
             let mut item = self.items[i];
             item.render(ctx);
             // player eats or interacts with item?
@@ -269,23 +270,23 @@ impl State {
                             ItemType::Egg,
                         );
                         self.items[i] = new_egg;
-                    },
-                    ItemType::Weeds | ItemType::DangerousWeeds => {}, // do nothing, i.e. don't get eaten
-                    _ => self.items[i] = Item::spawn(), // just eat
+                    }
+                    ItemType::Weeds | ItemType::DangerousWeeds => {} // do nothing, i.e. don't get eaten
+                    _ => self.items[i] = Item::spawn(),              // just eat
                 }
             }
-            self.score += 1;
+            //self.score += 1;
             // ducklings eat or interact with item? (grains only)
             if item.item_type == ItemType::Grains {
                 for s in self.player.segments.iter().skip(1) {
-                    if item.x == s.x && item.y == s.y{
+                    if item.x == s.x && item.y == s.y {
                         remove_later.push(i);
                     }
                 }
             }
             // mongooses eat or interact with item? (eggs only)
-            if item.item_type == ItemType::Egg{
-                for m in self.mongeese.iter(){
+            if item.item_type == ItemType::Egg {
+                for m in self.mongeese.iter() {
                     if item.x == m.x && item.y == m.y {
                         remove_later.push(i);
                     }
@@ -294,8 +295,8 @@ impl State {
         }
         // drop any items that got eaten (and not otherwise removed/replaced)
         let mut remaining_items: Vec<Item> = vec![];
-        for (i, item) in self.items.clone().iter().enumerate(){
-            if ! remove_later.contains(&i){
+        for (i, item) in self.items.clone().iter().enumerate() {
+            if !remove_later.contains(&i) {
                 remaining_items.push(*item);
             }
         }

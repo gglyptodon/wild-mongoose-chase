@@ -1,11 +1,11 @@
-use std::collections::HashSet;
-use std::thread::spawn;
 use crate::{GRAIN_TO_WEEDS_TIME, HEIGHT, WIDTH};
 use bracket_lib::prelude::*;
 use rand::{
     distributions::{Distribution, Standard},
     Rng,
 };
+use std::collections::HashSet;
+use std::thread::spawn;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ItemType {
@@ -15,7 +15,7 @@ pub enum ItemType {
     Yummy, // turns to weeds after GRAIN_TO_WEEDS_TIME seconds.
     Startling,
     Egg,
-    Weeds, //spawns DangerousWeeds after MONGOOSE_SPAWN_TIME seconds.
+    Weeds,          //spawns DangerousWeeds after MONGOOSE_SPAWN_TIME seconds.
     DangerousWeeds, //spawns mongoose after MONGOOSE_WARN_TIME seconds
 }
 
@@ -40,11 +40,11 @@ pub struct Item {
 }
 
 impl Item {
-    pub fn spawn_on_free_space(occupied: &HashSet<(i32,i32)>)->Self{
+    pub fn spawn_on_free_space(occupied: &HashSet<(i32, i32)>) -> Self {
         let mut new = Item::spawn();
-        while occupied.contains(&(new.x, new.y)){
+        while occupied.contains(&(new.x, new.y)) {
             println!("renew {:?}", occupied);
-            new=Item::spawn();
+            new = Item::spawn();
         }
         println!("spawn on free {:?}", occupied);
         new
