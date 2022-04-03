@@ -46,7 +46,7 @@ impl Item {
             println!("renew {:?}", occupied);
             new=Item::spawn();
         }
-        //println!("spawn on free {:?}", occupied);
+        println!("spawn on free {:?}", occupied);
         new
     }
     pub fn spawn() -> Self {

@@ -61,6 +61,8 @@ impl State {
         self.frame_time_mongoose = 0.0;
         self.mode = GameMode::Playing;
         self.mongeese = vec![Mongoose::spawn()];
+        self.occupied = vec![];
+        self.occupied_all = HashSet::new();
     }
 
     fn main_menu(&mut self, ctx: &mut BTerm) {
@@ -262,6 +264,7 @@ impl State {
 
             if self.player.x == item.x && self.player.y == item.y {
                 self.player.eat(&item);
+                self.occupied_all.remove(&(item.x, item.y));
 
                 if item.item_type == ItemType::Yummy {
                     // offset egg from current positions so as to not immediately hatch/eat it
