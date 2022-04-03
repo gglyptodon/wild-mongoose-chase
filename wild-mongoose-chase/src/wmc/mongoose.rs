@@ -95,7 +95,7 @@ impl Mongoose {
         }
 
         match self.direction {
-            Direction::Stopped => {} //self.direction = rand::random(),
+            Direction::Stopped => self.direction = rand::random(),
             Direction::Left => {
                 self.x -= 1;
                 if self.x < 1 {

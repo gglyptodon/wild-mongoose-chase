@@ -23,8 +23,8 @@ impl Distribution<ItemType> for Standard {
         match rng.gen_range(0..=3) {
             0 => ItemType::Grains,
             1 => ItemType::Yummy,
-            2 => ItemType::Startling,
-            _ => ItemType::Mystery,
+            //2 => ItemType::Startling,
+            _ => ItemType::Grains,//Mystery,
         }
     }
 }
