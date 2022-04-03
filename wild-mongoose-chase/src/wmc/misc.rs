@@ -10,6 +10,7 @@ pub struct State {
     player: Player,
     frame_time: f32,
     frame_time_mongoose:f32,
+    spawn_time_items:f32,
     score: i32,
     items: Vec<Item>,
     symbol: Option<u16>,
@@ -27,6 +28,7 @@ impl State {
             player: Player::new(random.range(1, WIDTH), random.range(1, HEIGHT), None),
             frame_time: 0.0,
             frame_time_mongoose: 0.0,
+            spawn_time_items: 0.0,
             score: 0,
             items: vec![Item::spawn()],
             symbol: None,
@@ -116,6 +118,11 @@ impl State {
 
         self.frame_time += ctx.frame_time_ms;
         self.frame_time_mongoose += ctx.frame_time_ms;
+        self.spawn_time_items += ctx.frame_time_ms;
+        if self.spawn_time_items > 50ch.0*FRAME_DURATION{
+            self.items.push(Item::spawn());
+            self.spawn_time_items=0.0;
+        }
         if self.frame_time > FRAME_DURATION {
             self.frame_time = 0.0;
 
