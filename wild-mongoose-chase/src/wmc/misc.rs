@@ -162,7 +162,8 @@ impl State {
                         if i.item_type == ItemType::Grains {
                             i.item_type = ItemType::Weeds;
                         } else {
-                            self.mongeese.push(Mongoose::spawn_at(i.x, i.y))
+                            self.mongeese.push(Mongoose::spawn_at(i.x, i.y));
+                            i.timer = Some(90.0);
                         }
                     }
                 }
