@@ -37,6 +37,7 @@ pub struct Item {
 }
 
 impl Item {
+    pub fn spawn_on_free_space(occupied: Vec<(u32,u32)>){}
     pub fn spawn() -> Self {
         let mut random = RandomNumberGenerator::new();
         let t: ItemType = rand::random();
