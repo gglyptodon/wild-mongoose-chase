@@ -1,5 +1,5 @@
 use crate::wmc::item::{Item, ItemType};
-use crate::wmc::player::{Direction, Player};
+use crate::wmc::player::{Direction, Player, Segment};
 use bracket_lib::prelude::*;
 
 use crate::wmc::mongoose::Mongoose;
@@ -155,13 +155,11 @@ impl State {
         if self.frame_time > FRAME_DURATION {
             //
 
-            //
+            // adjust items via timer (grass to weeds, weeds to dangerous weeds and back)
             for mut i in &mut self.items {
                 //todo
-                println!("{:?}", i);
                 if let Some(mut time) = i.timer {
                     i.timer = Some(time - 1.0);
-                    //println!("{:?}",i);
                     if time <= 0.0 {
                         if i.item_type == ItemType::Grains {
                             i.item_type = ItemType::Weeds;
@@ -249,41 +247,64 @@ impl State {
                 self.mode = GameMode::GameOver
             }
         }
-
+        let mut remove_later: Vec<usize> = vec![];
         for i in 0..self.items.len() {
             let mut item = self.items[i];
             item.render(ctx);
-
+            // player eats or interacts with item?
             if self.player.x == item.x && self.player.y == item.y {
                 self.player.eat(&item);
 
-                if item.item_type == ItemType::Yummy {
-                    // offset egg from current positions so as to not immediately hatch/eat it
-                    let offset_x = match self.player.direction {
-                        Direction::Left => 1,
-                        Direction::Right => -1,
-                        _ => 0,
-                    };
-                    let offset_y = match self.player.direction {
-                        Direction::Up => 1,
-                        Direction::Down => -1,
-                        _ => 0,
-                    };
-                    let new_egg = Item::spawn_at(
-                        self.player.x + offset_x,
-                        self.player.y + offset_y,
-                        ItemType::Egg,
-                    );
-                    self.items[i] = new_egg;
-                } else {
-                    match item.item_type {
-                        ItemType::Weeds | ItemType::DangerousWeeds => {},
-                        _ => self.items[i] = Item::spawn(),
+                match item.item_type {
+                    ItemType::Yummy => {
+                        // offset egg from current positions so as to not immediately hatch/eat it
+                        let offset_x = match self.player.direction {
+                            Direction::Left => 1,
+                            Direction::Right => -1,
+                            _ => 0,
+                        };
+                        let offset_y = match self.player.direction {
+                            Direction::Up => 1,
+                            Direction::Down => -1,
+                            _ => 0,
+                        };
+                        let new_egg = Item::spawn_at(
+                            self.player.x + offset_x,
+                            self.player.y + offset_y,
+                            ItemType::Egg,
+                        );
+                        self.items[i] = new_egg;
+                    },
+                    ItemType::Weeds | ItemType::DangerousWeeds => {}, // do nothing, i.e. don't get eaten
+                    _ => self.items[i] = Item::spawn(), // just eat
+                }
+            }
+            self.score += 1;
+            // ducklings eat or interact with item? (grains only)
+            if item.item_type == ItemType::Grains {
+                for s in self.player.segments.iter().skip(1) {
+                    if item.x == s.x && item.y == s.y{
+                        remove_later.push(i);
                     }
                 }
-                self.score += 1;
+            }
+            // mongooses eat or interact with item? (eggs only)
+            if item.item_type == ItemType::Egg{
+                for m in self.mongeese.iter(){
+                    if item.x == m.x && item.y == m.y {
+                        remove_later.push(i);
+                    }
+                }
             }
         }
+        // drop any items that got eaten (and not otherwise removed/replaced)
+        let mut remaining_items: Vec<Item> = vec![];
+        for (i, item) in self.items.clone().iter().enumerate(){
+            if ! remove_later.contains(&i){
+                remaining_items.push(*item);
+            }
+        }
+        self.items = remaining_items;
     }
 }
 
