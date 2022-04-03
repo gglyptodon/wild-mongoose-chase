@@ -40,6 +40,7 @@ impl Mongoose {
             y,
             direction: rand::random(),
             glyph: 55,
+            frame: 0,
         }
     }
 
