@@ -71,7 +71,9 @@ impl State {
     fn dead(&mut self, ctx: &mut BTerm) {
         ctx.cls();
         ctx.print_centered(2, "Game Over");
-        ctx.print(2, 4, format!("Score:{}", self.score));
+        //ctx.print(2, 4, format!("Score:{}", self.score));
+        ctx.print(2, 4, format!("Score: {}", self.player.segments.iter().skip(1).filter(|x|x.is_alive).count()));
+
         ctx.print_centered(6, "Player (S)elect");
         ctx.print_centered(9, "(P)lay again");
         ctx.print_centered(10, "(Q)uit");
@@ -107,8 +109,10 @@ impl State {
     fn play(&mut self, ctx: &mut BTerm) {
         self.player.x = self.player.segments.get(0).unwrap().x;
         self.player.y = self.player.segments.get(0).unwrap().y;
+
         ctx.cls_bg(DARK_GRAY);
-        ctx.print(0, 0, format!("{}", self.score));
+        //ctx.print(0, 0, format!("{}", self.score));
+        ctx.print(0, 0, format!("Ducklings: {}", self.player.segments.iter().skip(1).filter(|x|x.is_alive).count()));
 
         self.frame_time += ctx.frame_time_ms;
         self.frame_time_mongoose += ctx.frame_time_ms;
