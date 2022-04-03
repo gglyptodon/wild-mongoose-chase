@@ -221,7 +221,8 @@ impl Player {
 
     pub fn eat(&mut self, item: &WMCItem) {
         match item.item_type {
-            ItemType::Weeds => match self.direction {
+
+            ItemType::Weeds | ItemType::DangerousWeeds => match self.direction {
                 Direction::Up => {
                     self.direction = Direction::Down;
                     self.segments[0].y += 2;
