@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+use std::hash::Hash;
 use crate::wmc::item::{Item, ItemType};
 use crate::wmc::player::{Direction, Player};
 use bracket_lib::prelude::*;
@@ -18,6 +20,8 @@ pub struct State {
     mongeese: Vec<Mongoose>,
     // holds (x, y) positions for everything the upcoming move could potentially collide with
     occupied: Vec<(i32, i32)>,
+   // holds (x, y) positions for everything
+    occupied_all: HashSet<(i32, i32)>,
 }
 
 impl State {
@@ -37,6 +41,7 @@ impl State {
             symbol: None,
             mongeese: vec![mongoose.clone()], //Mongoose::spawn()],
             occupied: vec![],
+            occupied_all: HashSet::new()
         }
     }
     fn restart(&mut self) {
@@ -148,7 +153,7 @@ impl State {
             self.spawn_time_items += ctx.frame_time_ms;
         }
         if self.spawn_time_items > 50.0 * FRAME_DURATION {
-            self.items.push(Item::spawn());
+            self.items.push(Item::spawn_on_free_space(&self.occupied_all));
             self.spawn_time_items = 0.0;
         }
 
@@ -158,7 +163,7 @@ impl State {
             //
             for mut i in &mut self.items {
                 //todo
-                println!("{:?}", i);
+                //println!("{:?}", i);
                 if let Some(mut time) = i.timer {
                     i.timer = Some(time - 1.0);
                     //println!("{:?}",i);
@@ -251,6 +256,7 @@ impl State {
         }
 
         for i in 0..self.items.len() {
+            self.occupied_all.insert((self.items[i].x, self.items[i].y));  //lol
             let mut item = self.items[i];
             item.render(ctx);
 
