@@ -285,7 +285,7 @@ impl State {
                         self.items[i] = new_egg;
                     },
                     ItemType::Weeds | ItemType::DangerousWeeds => {}, // do nothing, i.e. don't get eaten
-                    _ => self.items[i] = Item::spawn(), // just eat
+                    _ => remove_later.push(i), // just eat
                 }
             }
             self.score += 1;
