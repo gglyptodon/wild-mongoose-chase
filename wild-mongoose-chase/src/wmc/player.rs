@@ -216,6 +216,20 @@ impl Player {
 
     pub fn eat(&mut self, item: &WMCItem) {
         match item.item_type {
+            ItemType::Weeds => {
+
+                match self.direction {
+                    Direction::Up => {self.direction = Direction::Down; self.segments[0].y +=2;},
+                    Direction::Down => {self.direction = Direction::Up; self.segments[0].y -=2},
+                    Direction::Left => {self.direction = Direction::Right; self.segments[0].x +=2},
+                    Direction::Right => {self.direction = Direction::Left; self.segments[0].x-=2},
+                    _ => {}
+                }
+                },
+                //self.gravity_and_move(&vec![]);
+
+                //self.direction = Direction::Stopped;
+
             //serpent_item::ItemType::ShorterSnake => {
             //    if let Some(_s) = self.segments.get(1) {
             //        self.segments.pop();
@@ -246,9 +260,9 @@ impl Player {
             ItemType::Mystery => {
                 println!("mysterious")
             }
-            ItemType::Weeds => {
-                println!("Weeds")
-            }
+           // ItemType::Weeds => {
+           //     println!("Weeds")
+           // }
         }
     }
 }
