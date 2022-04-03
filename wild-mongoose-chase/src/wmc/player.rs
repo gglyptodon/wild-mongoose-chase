@@ -177,7 +177,6 @@ impl Player {
         let mut seg0 = self.segments.get_mut(0).unwrap();
         seg0.direction_now = self.direction;
         seg0.take_move();
-        println!("{:?}", occupied);
         if occupied.contains(&(seg0.x, seg0.y)) {
             seg0.un_move(self.direction);
             println!("unmoving head");

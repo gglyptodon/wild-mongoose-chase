@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+use std::thread::spawn;
 use crate::{GRAIN_TO_WEEDS_TIME, HEIGHT, WIDTH};
 use bracket_lib::prelude::*;
 use rand::{
@@ -38,6 +40,15 @@ pub struct Item {
 }
 
 impl Item {
+    pub fn spawn_on_free_space(occupied: &HashSet<(i32,i32)>)->Self{
+        let mut new = Item::spawn();
+        while occupied.contains(&(new.x, new.y)){
+            println!("renew {:?}", occupied);
+            new=Item::spawn();
+        }
+        println!("spawn on free {:?}", occupied);
+        new
+    }
     pub fn spawn() -> Self {
         let mut random = RandomNumberGenerator::new();
         let t: ItemType = rand::random();

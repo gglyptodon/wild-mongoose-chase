@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+use std::hash::Hash;
 use crate::wmc::item::{Item, ItemType};
 use crate::wmc::player::{Direction, Player, Segment};
 use bracket_lib::prelude::*;
@@ -18,6 +20,8 @@ pub struct State {
     mongeese: Vec<Mongoose>,
     // holds (x, y) positions for everything the upcoming move could potentially collide with
     occupied: Vec<(i32, i32)>,
+   // holds (x, y) positions for everything
+    occupied_all: HashSet<(i32, i32)>,
 }
 
 impl State {
@@ -37,6 +41,7 @@ impl State {
             symbol: None,
             mongeese: vec![mongoose.clone()], //Mongoose::spawn()],
             occupied: vec![],
+            occupied_all: HashSet::new()
         }
     }
     fn restart(&mut self) {
@@ -56,6 +61,8 @@ impl State {
         self.frame_time_mongoose = 0.0;
         self.mode = GameMode::Playing;
         self.mongeese = vec![Mongoose::spawn()];
+        self.occupied = vec![];
+        self.occupied_all = HashSet::new();
     }
 
     fn main_menu(&mut self, ctx: &mut BTerm) {
@@ -148,7 +155,7 @@ impl State {
             self.spawn_time_items += ctx.frame_time_ms;
         }
         if self.spawn_time_items > 50.0 * FRAME_DURATION {
-            self.items.push(Item::spawn());
+            self.items.push(Item::spawn_on_free_space(&self.occupied_all));
             self.spawn_time_items = 0.0;
         }
 
@@ -249,11 +256,13 @@ impl State {
         }
         let mut remove_later: Vec<usize> = vec![];
         for i in 0..self.items.len() {
+            self.occupied_all.insert((self.items[i].x, self.items[i].y));  //lol
             let mut item = self.items[i];
             item.render(ctx);
             // player eats or interacts with item?
             if self.player.x == item.x && self.player.y == item.y {
                 self.player.eat(&item);
+                self.occupied_all.remove(&(item.x, item.y));
 
                 match item.item_type {
                     ItemType::Yummy => {
