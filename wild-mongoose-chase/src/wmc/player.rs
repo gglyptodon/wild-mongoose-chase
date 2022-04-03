@@ -26,7 +26,7 @@ pub struct Segment {
     pub y: i32,
     pub direction_now: Direction,
     pub direction_next: Direction,
-    pub glyph: u16,
+    pub glyph: usize,
     pub is_alive: bool,
 }
 
@@ -36,7 +36,7 @@ impl Segment {
         y: i32,
         direction_now: Direction,
         direction_next: Direction,
-        glyph: u16,
+        glyph: usize,
     ) -> Self {
         Segment {
             x,
@@ -85,7 +85,6 @@ pub struct Player {
     frame: usize,
     pub length: i32,
     pub segments: Vec<Segment>,
-    pub(crate) symbol: Option<u16>,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -98,11 +97,10 @@ pub enum Direction {
 }
 
 impl Player {
-    pub fn new(x: i32, y: i32, symbol: Option<u16>) -> Self {
+    pub fn new(x: i32, y: i32) -> Self {
         Self {
             x,
             y,
-            symbol,
             frame: 0,
             length: 1,
             direction: Direction::Stopped,
@@ -119,16 +117,13 @@ impl Player {
 
     pub fn render(&mut self, ctx: &mut BTerm) {
         let mut glyph_idx = match self.direction {
-            Direction::Left => 244,
-            Direction::Right => 245,
-            Direction::Up => 246,
-            Direction::Down => 246,
-            _ => 244,
+            Direction::Left => 246,
+            Direction::Right => 248,
+            Direction::Up => 250,
+            Direction::Down => 250,
+            _ => 246,
         };
-        // player select override?
-        if let Some(symbol) = self.symbol {
-            glyph_idx = symbol;
-        }
+
         ctx.set_active_console(1);
         ctx.cls();
 
@@ -140,17 +135,17 @@ impl Player {
             PointF::new(1.0, 1.0),
             WHITE,
             (0, 0, 0, 0),
-            glyph_idx,
+            glyph_idx + self.frame,
         );
         let mut alive_segments: Vec<Segment> = Vec::new();
         alive_segments.push(*self.segments.get(0).clone().unwrap());
         for segment in self.segments.clone().iter().skip(1) {
             let mut glyph_seg_idx = match segment.direction_now {
-                Direction::Left => 241,
+                Direction::Left => 240,
                 Direction::Right => 242,
-                Direction::Up => 243,
-                Direction::Down => 243,
-                _ => 241,
+                Direction::Up => 244,
+                Direction::Down => 244,
+                _ => 240,
             };
             if !segment.is_alive {
                 glyph_seg_idx = 58;
@@ -164,7 +159,7 @@ impl Player {
                 PointF::new(1.0, 1.0),
                 WHITE,
                 (0, 0, 0, 0),
-                glyph_seg_idx, //glyph_idx, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
+                glyph_seg_idx + self.frame, //glyph_idx, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
             );
         }
         ctx.set_active_console(0);

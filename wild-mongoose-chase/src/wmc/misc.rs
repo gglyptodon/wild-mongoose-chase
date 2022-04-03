@@ -32,7 +32,7 @@ impl State {
 
         Self {
             mode: GameMode::GameMenu,
-            player: Player::new(random.range(1, WIDTH), random.range(1, HEIGHT), None),
+            player: Player::new(random.range(1, WIDTH), random.range(1, HEIGHT)),
             frame_time: 0.0,
             frame_time_mongoose: 0.0,
             spawn_time_items: 0.0,
@@ -50,10 +50,9 @@ impl State {
             self.player = Player::new(
                 random.range(1, WIDTH),
                 random.range(1, HEIGHT),
-                Some(symbol),
             );
         } else {
-            self.player = Player::new(random.range(1, WIDTH), random.range(1, HEIGHT), None);
+            self.player = Player::new(random.range(1, WIDTH), random.range(1, HEIGHT));
         }
         self.score = 0;
         self.items = vec![Item::spawn()];
