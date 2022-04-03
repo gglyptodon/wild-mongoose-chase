@@ -139,7 +139,7 @@ impl Player {
             Degrees::new(0.0),
             PointF::new(1.0, 1.0),
             WHITE,
-            DARK_GRAY,
+            (0, 0, 0, 0),
             glyph_idx,
         );
         let mut alive_segments: Vec<Segment> = Vec::new();
@@ -163,7 +163,7 @@ impl Player {
                 Degrees::new(0.0),
                 PointF::new(1.0, 1.0),
                 WHITE,
-                DARK_GRAY,
+                (0, 0, 0, 0),
                 glyph_seg_idx, //glyph_idx, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
             );
         }

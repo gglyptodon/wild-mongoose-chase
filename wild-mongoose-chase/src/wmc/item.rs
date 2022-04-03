@@ -105,7 +105,7 @@ impl Item {
             Degrees::new(0.0),
             PointF::new(1.0, 1.0),
             WHITE,
-            GREY,
+            (0, 0, 0, 0),
             self.get_glyph(), //.glyph, //self.glyph, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
         );
         ctx.set_active_console(0);
