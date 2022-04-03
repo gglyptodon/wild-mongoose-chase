@@ -35,16 +35,23 @@ impl Mongoose {
     }
 
     pub fn render(&mut self, ctx: &mut BTerm) {
+        let glyph_idx = match self.direction {
+            Direction::Left => 212,
+            Direction::Right => 210,
+            Direction::Up => 214,
+            Direction::Down => 216,
+            _ => 210,
+        };
         ctx.set_active_console(1);
         //ctx.cls();
         ctx.set_fancy(
             PointF::new(self.x as f32, self.y as f32),
             1,
             Degrees::new(0.0),
-            PointF::new(1.5, 1.5),
+            PointF::new(1.8, 1.8),
             WHITE,
             GREY,
-            self.glyph + self.frame, //.glyph, //self.glyph, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
+            glyph_idx + self.frame, //.glyph, //self.glyph, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
         );
         ctx.set_active_console(0);
     }
