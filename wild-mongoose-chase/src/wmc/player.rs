@@ -54,7 +54,7 @@ impl Segment {
         self.direction_next = previous.direction_now;
     }
 
-    pub fn take_move(&mut self){
+    pub fn take_move(&mut self) {
         // move according to direction now
         match self.direction_now {
             Direction::Left => self.x -= 1,
@@ -66,9 +66,9 @@ impl Segment {
     }
 
     // undo any very recent moves (in case attempted move was into an occupied space
-    pub fn un_move(&mut self, direction_old: Direction){
+    pub fn un_move(&mut self, direction_old: Direction) {
         match direction_old {
-            Direction::Stopped => {},
+            Direction::Stopped => {}
             Direction::Left => self.x += 1,
             Direction::Right => self.x -= 1,
             Direction::Up => self.y += 1,
@@ -166,14 +166,14 @@ impl Player {
         ctx.set_active_console(0);
     }
 
-    pub fn gravity_and_move(&mut self, occupied: &Vec<(i32, i32)>)->Vec<(i32,i32)> {
-        let mut result_vec:Vec<(i32, i32)> = vec![];
+    pub fn gravity_and_move(&mut self, occupied: &Vec<(i32, i32)>) -> Vec<(i32, i32)> {
+        let mut result_vec: Vec<(i32, i32)> = vec![];
 
         let mut seg0 = self.segments.get_mut(0).unwrap();
         seg0.direction_now = self.direction;
         seg0.take_move();
         println!("{:?}", occupied);
-        if occupied.contains(&(seg0.x, seg0.y)){
+        if occupied.contains(&(seg0.x, seg0.y)) {
             seg0.un_move(self.direction);
             println!("unmoving head");
         }
@@ -187,7 +187,7 @@ impl Player {
         for (i, s) in self.segments.iter_mut().enumerate().skip(1) {
             let direction_old = s.direction_now.clone();
             s.update_direction(seg.get(i - 1).unwrap());
-            if occupied.contains(&(s.x, s.y)){
+            if occupied.contains(&(s.x, s.y)) {
                 s.un_move(direction_old);
             }
             result_vec.push((s.x, s.y));
@@ -222,7 +222,7 @@ impl Player {
             //    }
             //}
             ItemType::Egg => self.append(),
-            ItemType::NormalBonus => {
+            ItemType::Grains => {
                 println!("increment score here")
             }
             ItemType::Yummy => {
@@ -245,6 +245,9 @@ impl Player {
 
             ItemType::Mystery => {
                 println!("mysterious")
+            }
+            ItemType::Weeds => {
+                println!("Weeds")
             }
         }
     }

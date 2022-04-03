@@ -2,14 +2,15 @@ use crate::wmc::item::{Item, ItemType};
 use crate::wmc::player::{Direction, Player};
 use bracket_lib::prelude::*;
 
-use crate::{FRAME_DURATION, HEIGHT, WIDTH};
 use crate::wmc::mongoose::Mongoose;
+use crate::{FRAME_DURATION, HEIGHT, WIDTH};
 
 pub struct State {
     mode: GameMode,
     player: Player,
     frame_time: f32,
-    frame_time_mongoose:f32,
+    frame_time_mongoose: f32,
+    spawn_time_items: f32,
     score: i32,
     items: Vec<Item>,
     symbol: Option<u16>,
@@ -27,6 +28,7 @@ impl State {
             player: Player::new(random.range(1, WIDTH), random.range(1, HEIGHT), None),
             frame_time: 0.0,
             frame_time_mongoose: 0.0,
+            spawn_time_items: 0.0,
             score: 0,
             items: vec![Item::spawn()],
             symbol: None,
@@ -71,7 +73,21 @@ impl State {
     fn dead(&mut self, ctx: &mut BTerm) {
         ctx.cls();
         ctx.print_centered(2, "Game Over");
-        ctx.print(2, 4, format!("Score:{}", self.score));
+        //ctx.print(2, 4, format!("Score:{}", self.score));
+        ctx.print(
+            2,
+            4,
+            format!(
+                "Score: {}",
+                self.player
+                    .segments
+                    .iter()
+                    .skip(1)
+                    .filter(|x| x.is_alive)
+                    .count()
+            ),
+        );
+
         ctx.print_centered(6, "Player (S)elect");
         ctx.print_centered(9, "(P)lay again");
         ctx.print_centered(10, "(Q)uit");
@@ -107,20 +123,63 @@ impl State {
     fn play(&mut self, ctx: &mut BTerm) {
         self.player.x = self.player.segments.get(0).unwrap().x;
         self.player.y = self.player.segments.get(0).unwrap().y;
+
         ctx.cls_bg(DARK_GRAY);
-        ctx.print(0, 0, format!("{}", self.score));
+        //ctx.print(0, 0, format!("{}", self.score));
+        ctx.print(
+            0,
+            0,
+            format!(
+                "Ducklings: {}",
+                self.player
+                    .segments
+                    .iter()
+                    .skip(1)
+                    .filter(|x| x.is_alive)
+                    .count()
+            ),
+        );
 
         self.frame_time += ctx.frame_time_ms;
         self.frame_time_mongoose += ctx.frame_time_ms;
+        self.spawn_time_items += ctx.frame_time_ms;
+        if self.spawn_time_items > 50.0 * FRAME_DURATION {
+            self.items.push(Item::spawn());
+            self.spawn_time_items = 0.0;
+        }
+
         if self.frame_time > FRAME_DURATION {
+            //
+
+            //
+            for mut i in &mut self.items {
+                //todo
+                println!("{:?}", i);
+                if let Some(mut time) = i.timer {
+                    i.timer = Some(time - 1.0);
+                    //println!("{:?}",i);
+                    if time <= 0.0 {
+                        if i.item_type == ItemType::Grains {
+                            i.item_type = ItemType::Weeds;
+                        } else {
+                            self.mongeese.push(Mongoose::spawn_at(i.x, i.y));
+                            i.timer = Some(90.0);
+                        }
+                    }
+                }
+            }
+
             self.frame_time = 0.0;
 
             self.occupied = self.player.gravity_and_move(&self.occupied);
-            if self.frame_time_mongoose > 2.0 *FRAME_DURATION{
-                for mut m in &mut self.mongeese{
-                    m.movement(self.player.segments.last().unwrap().x, self.player.segments.last().unwrap().y);
+            if self.frame_time_mongoose > 2.0 * FRAME_DURATION {
+                for mut m in &mut self.mongeese {
+                    m.movement(
+                        self.player.segments.last().unwrap().x,
+                        self.player.segments.last().unwrap().y,
+                    );
                 }
-                    self.frame_time_mongoose = 0.0;
+                self.frame_time_mongoose = 0.0;
             }
         }
         if let Some(VirtualKeyCode::Left) = ctx.key {
@@ -170,8 +229,7 @@ impl State {
         let head = tmp.get(0).unwrap();
         let tail = tmp.last().unwrap();
         for s in self.player.segments.iter_mut().skip(1) {
-            if head.x == s.x && head.y == s.y && tail.direction_now != Direction::Stopped
-            {
+            if head.x == s.x && head.y == s.y && tail.direction_now != Direction::Stopped {
                 //self.mode = GameMode::GameOver;
                 println!("collided with own segment");
             }
@@ -184,10 +242,10 @@ impl State {
             }
         }
         self.player.render(ctx);
-        for mut m in self.mongeese.clone(){
+        for mut m in self.mongeese.clone() {
             m.render(ctx);
-            if head.x == m.x && head.y == m.y{
-                self.mode=GameMode::GameOver
+            if head.x == m.x && head.y == m.y {
+                self.mode = GameMode::GameOver
             }
         }
 
@@ -196,7 +254,6 @@ impl State {
             item.render(ctx);
 
             if self.player.x == item.x && self.player.y == item.y {
-                
                 self.player.eat(&item);
                 if item.item_type == ItemType::Yummy {
                     // offset egg from current positions so as to not immediately hatch/eat it
