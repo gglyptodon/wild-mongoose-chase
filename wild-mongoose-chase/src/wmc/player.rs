@@ -142,6 +142,8 @@ impl Player {
             DARK_GRAY,
             glyph_idx,
         );
+        let mut alive_segments:Vec<Segment> = Vec::new();
+        alive_segments.push(*self.segments.get(0).clone().unwrap());
         for segment in self.segments.clone().iter().skip(1) {
             let mut glyph_seg_idx = match segment.direction_now {
                 Direction::Left => 241,
@@ -152,7 +154,7 @@ impl Player {
             };
             if !segment.is_alive {
                 glyph_seg_idx = 58;
-            }
+            }else{alive_segments.push(segment.clone())}
             ctx.set_fancy(
                 PointF::new(segment.x as f32, segment.y as f32),
                 1,
@@ -164,6 +166,7 @@ impl Player {
             );
         }
         ctx.set_active_console(0);
+        self.segments = alive_segments;
     }
 
     pub fn gravity_and_move(&mut self, occupied: &Vec<(i32, i32)>) -> Vec<(i32, i32)> {
@@ -226,15 +229,7 @@ impl Player {
                     _ => {}
                 }
                 },
-                //self.gravity_and_move(&vec![]);
 
-                //self.direction = Direction::Stopped;
-
-            //serpent_item::ItemType::ShorterSnake => {
-            //    if let Some(_s) = self.segments.get(1) {
-            //        self.segments.pop();
-            //    }
-            //}
             ItemType::Egg => self.append(),
             ItemType::Grains => {
                 println!("increment score here")
