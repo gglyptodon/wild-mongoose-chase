@@ -67,31 +67,35 @@ impl Mongoose {
     }
 
     pub fn movement(&mut self, towards_x: i32, towards_y: i32) {
-        self.frame += 1;
-        self.frame %= 2;
-        let distance_x = towards_x - self.x;
-        let distance_y = towards_y - self.y;
-
-        if distance_x.abs() >= distance_y.abs() {
-            if distance_x == 0 {
-                self.direction = Stopped
-            };
-
-            if distance_x > 0 {
-                self.direction = Direction::Right
-            } else if distance_x < 0 {
-                self.direction = Direction::Left
-            }
+        if self.direction == Direction::Stopped {
+            //
         } else {
-            if distance_y > 0 {
-                self.direction = Direction::Down
-            } else if distance_y < 0 {
-                self.direction = Direction::Up
+            self.frame += 1;
+            self.frame %= 2;
+            let distance_x = towards_x - self.x;
+            let distance_y = towards_y - self.y;
+
+            if distance_x.abs() >= distance_y.abs() {
+                if distance_x == 0 {
+                    self.direction = Stopped
+                };
+
+                if distance_x > 0 {
+                    self.direction = Direction::Right
+                } else if distance_x < 0 {
+                    self.direction = Direction::Left
+                }
+            } else {
+                if distance_y > 0 {
+                    self.direction = Direction::Down
+                } else if distance_y < 0 {
+                    self.direction = Direction::Up
+                }
             }
         }
 
         match self.direction {
-            Direction::Stopped => self.direction = rand::random(),
+            Direction::Stopped => {} //self.direction = rand::random(),
             Direction::Left => {
                 self.x -= 1;
                 if self.x < 1 {
