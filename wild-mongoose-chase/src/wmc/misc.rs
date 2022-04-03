@@ -3,6 +3,7 @@ use crate::wmc::player::{Direction, Player};
 use bracket_lib::prelude::*;
 
 use crate::wmc::mongoose::Mongoose;
+use crate::wmc::player::Direction::Stopped;
 use crate::{FRAME_DURATION, HEIGHT, WIDTH};
 
 pub struct State {
@@ -22,6 +23,8 @@ pub struct State {
 impl State {
     pub fn new() -> Self {
         let mut random = RandomNumberGenerator::new();
+        let mut mongoose = Mongoose::spawn();
+        mongoose.direction = Direction::Stopped;
 
         Self {
             mode: GameMode::GameMenu,
@@ -32,7 +35,7 @@ impl State {
             score: 0,
             items: vec![Item::spawn()],
             symbol: None,
-            mongeese: vec![Mongoose::spawn()],
+            mongeese: vec![mongoose.clone()], //Mongoose::spawn()],
             occupied: vec![],
         }
     }
@@ -139,10 +142,11 @@ impl State {
                     .count()
             ),
         );
-
-        self.frame_time += ctx.frame_time_ms;
-        self.frame_time_mongoose += ctx.frame_time_ms;
-        self.spawn_time_items += ctx.frame_time_ms;
+        if self.player.direction != Direction::Stopped {
+            self.frame_time += ctx.frame_time_ms;
+            self.frame_time_mongoose += ctx.frame_time_ms;
+            self.spawn_time_items += ctx.frame_time_ms;
+        }
         if self.spawn_time_items > 50.0 * FRAME_DURATION {
             self.items.push(Item::spawn());
             self.spawn_time_items = 0.0;
@@ -174,10 +178,15 @@ impl State {
             self.occupied = self.player.gravity_and_move(&self.occupied);
             if self.frame_time_mongoose > 2.0 * FRAME_DURATION {
                 for mut m in &mut self.mongeese {
-                    m.movement(
-                        self.player.segments.last().unwrap().x,
-                        self.player.segments.last().unwrap().y,
-                    );
+                    if self.player.direction == Stopped {
+                    }
+                    //todo
+                    else {
+                        m.movement(
+                            self.player.segments.last().unwrap().x,
+                            self.player.segments.last().unwrap().y,
+                        );
+                    }
                 }
                 self.frame_time_mongoose = 0.0;
             }
@@ -263,8 +272,9 @@ impl State {
                     );
                     self.items[i] = new_egg;
                 } else {
-                    if item.item_type !=ItemType::Weeds{
-                    self.items[i] = Item::spawn();}
+                    if item.item_type != ItemType::Weeds {
+                        self.items[i] = Item::spawn();
+                    }
                 }
                 self.score += 1;
             }

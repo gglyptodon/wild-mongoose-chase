@@ -142,7 +142,7 @@ impl Player {
             DARK_GRAY,
             glyph_idx,
         );
-        let mut alive_segments:Vec<Segment> = Vec::new();
+        let mut alive_segments: Vec<Segment> = Vec::new();
         alive_segments.push(*self.segments.get(0).clone().unwrap());
         for segment in self.segments.clone().iter().skip(1) {
             let mut glyph_seg_idx = match segment.direction_now {
@@ -154,7 +154,9 @@ impl Player {
             };
             if !segment.is_alive {
                 glyph_seg_idx = 58;
-            }else{alive_segments.push(segment.clone())}
+            } else {
+                alive_segments.push(segment.clone())
+            }
             ctx.set_fancy(
                 PointF::new(segment.x as f32, segment.y as f32),
                 1,
@@ -219,16 +221,25 @@ impl Player {
 
     pub fn eat(&mut self, item: &WMCItem) {
         match item.item_type {
-            ItemType::Weeds => {
-
-                match self.direction {
-                    Direction::Up => {self.direction = Direction::Down; self.segments[0].y +=2;},
-                    Direction::Down => {self.direction = Direction::Up; self.segments[0].y -=2},
-                    Direction::Left => {self.direction = Direction::Right; self.segments[0].x +=2},
-                    Direction::Right => {self.direction = Direction::Left; self.segments[0].x-=2},
-                    _ => {}
+            ItemType::Weeds => match self.direction {
+                Direction::Up => {
+                    self.direction = Direction::Down;
+                    self.segments[0].y += 2;
                 }
-                },
+                Direction::Down => {
+                    self.direction = Direction::Up;
+                    self.segments[0].y -= 2
+                }
+                Direction::Left => {
+                    self.direction = Direction::Right;
+                    self.segments[0].x += 2
+                }
+                Direction::Right => {
+                    self.direction = Direction::Left;
+                    self.segments[0].x -= 2
+                }
+                _ => {}
+            },
 
             ItemType::Egg => self.append(),
             ItemType::Grains => {
@@ -254,10 +265,9 @@ impl Player {
 
             ItemType::Mystery => {
                 println!("mysterious")
-            }
-           // ItemType::Weeds => {
-           //     println!("Weeds")
-           // }
+            } // ItemType::Weeds => {
+              //     println!("Weeds")
+              // }
         }
     }
 }
