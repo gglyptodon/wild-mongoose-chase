@@ -19,7 +19,7 @@ pub struct Mongoose {
     pub y: i32,
     pub direction: Direction,
     pub glyph: usize,
-    //frame: usize,
+    frame: usize,
 }
 
 impl Mongoose {
@@ -29,7 +29,8 @@ impl Mongoose {
             x: random.range(1, WIDTH),
             y: random.range(1, HEIGHT),
             direction: rand::random(),
-            glyph: 55,
+            glyph: 208,
+            frame: 0,
         }
     }
 
@@ -40,15 +41,17 @@ impl Mongoose {
             PointF::new(self.x as f32, self.y as f32),
             1,
             Degrees::new(0.0),
-            PointF::new(1.0, 1.0),
+            PointF::new(1.5, 1.5),
             WHITE,
             GREY,
-            self.glyph, //.glyph, //self.glyph, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
+            self.glyph + self.frame, //.glyph, //self.glyph, //0 as u16, //self.symbol //DRAGON_FRAMES[self.frame]
         );
         ctx.set_active_console(0);
     }
 
     pub fn movement(&mut self, towards_x: i32, towards_y: i32) {
+        self.frame += 1;
+        self.frame %= 2;
         let distance_x = towards_x - self.x;
         let distance_y = towards_y - self.y;
 
