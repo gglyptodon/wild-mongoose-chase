@@ -183,28 +183,16 @@ impl State {
             }
         }
         if let Some(VirtualKeyCode::Left) = ctx.key {
-            if self.player.direction == Direction::Right {
-                // nop
-            } else {
-                self.player.direction = Direction::Left;
-            }
+            self.player.direction = Direction::Left;
         }
         if let Some(VirtualKeyCode::Right) = ctx.key {
-            if self.player.direction == Direction::Left {
-                //nop
-            } else {
-                self.player.direction = Direction::Right;
-            }
+            self.player.direction = Direction::Right;
         }
         if let Some(VirtualKeyCode::Up) = ctx.key {
-            if !(self.player.direction == Direction::Down) {
-                self.player.direction = Direction::Up;
-            }
+            self.player.direction = Direction::Up;
         }
         if let Some(VirtualKeyCode::Down) = ctx.key {
-            if !(self.player.direction == Direction::Up) {
-                self.player.direction = Direction::Down;
-            }
+            self.player.direction = Direction::Down;
         }
         if let Some(VirtualKeyCode::Space) = ctx.key {
             self.player.direction = Direction::Stopped;
@@ -214,16 +202,16 @@ impl State {
             self.player.append();
         }
         if self.player.y > HEIGHT {
-            self.mode = GameMode::GameOver
+            self.player.direction = Direction::Up;
         }
         if self.player.y <= 0 {
-            self.mode = GameMode::GameOver
+            self.player.direction = Direction::Down;
         }
         if self.player.x < 0 {
-            self.mode = GameMode::GameOver
+            self.player.direction = Direction::Right;
         }
         if self.player.x >= WIDTH {
-            self.mode = GameMode::GameOver
+            self.player.direction = Direction::Left;
         }
         let tmp = self.player.segments.clone();
         let head = tmp.get(0).unwrap();
