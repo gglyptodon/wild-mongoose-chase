@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html class="no-js" lang="">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Linux version 5.6.0">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title> Wild Mongoose Chase</title>
+<meta name="description" content="">
+<meta name="viewport" content=
+"width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/normalize.min.css">
+<link rel="stylesheet" href="css/main.css">
+<script src=
+"js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+</head>
+<body>
+<div class="header-container">
+<header class="wrapper clearfix">
+<h1 class="title"></h1>
+</header>
+</div>
+<div class="main-container">
+<div class="main wrapper clearfix">
+<article>
+<header>
+<h1>Wild Mongoose Chase</h1>
+</header>
+<section>
+<div>
+<canvas id="canvas"></canvas>
+<script src="./wild-mongoose-chase.js"></script>
+<script>
+
+      window.addEventListener("load", async () => {
+        await wasm_bindgen("./wild-mongoose-chase_bg.wasm");
+      });
+</script></div>
+</section>
+</article>
+</div>
+<!-- #main --></div>
+<!-- #main-container -->
+<div class="footer-container">
+<footer class="wrapper">
+<h3><a href=
+"https://github.com/gglyptodon/wild-mongoose-chase/">github</a></h3>
+</footer>
+</div>
+<script src=
+"//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+<script>
+window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')
+</script>
+<script src="js/main.js"></script>
+</body>
+</html>
