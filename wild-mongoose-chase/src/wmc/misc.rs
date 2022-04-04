@@ -129,7 +129,7 @@ impl State {
             self.frame_time_mongoose += ctx.frame_time_ms;
             self.spawn_time_items += ctx.frame_time_ms;
         }
-        if self.spawn_time_items > 50.0 * FRAME_DURATION {
+        if self.spawn_time_items > 40.0 * FRAME_DURATION {
             self.items
                 .push(Item::spawn_on_free_space(&self.occupied_all));
             self.spawn_time_items = 0.0;
