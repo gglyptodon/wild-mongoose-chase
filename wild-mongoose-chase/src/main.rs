@@ -19,5 +19,5 @@ fn main() -> BResult<()> {
 
 #[test]
 fn test_imports_player() {
-    serpent::serpent::player::hello_player();
+    wild_mongoose_chase::wmc::player::hello_player();
 }
