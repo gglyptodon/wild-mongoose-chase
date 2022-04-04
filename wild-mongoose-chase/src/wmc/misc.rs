@@ -15,7 +15,6 @@ pub struct State {
     spawn_time_items: f32,
     score: i32,
     items: Vec<Item>,
-    symbol: Option<u16>,
     mongeese: Vec<Mongoose>,
     // holds (x, y) positions for everything the upcoming move could potentially collide with
     occupied: Vec<(i32, i32)>,
@@ -37,7 +36,6 @@ impl State {
             spawn_time_items: 0.0,
             score: 0,
             items: vec![Item::spawn()],
-            symbol: None,
             mongeese: vec![mongoose.clone()], //Mongoose::spawn()],
             occupied: vec![],
             occupied_all: HashSet::new(),
@@ -45,14 +43,8 @@ impl State {
     }
     fn restart(&mut self) {
         let mut random = RandomNumberGenerator::new();
-        if let Some(symbol) = self.symbol {
-            self.player = Player::new(
-                random.range(1, WIDTH),
-                random.range(1, HEIGHT),
-            );
-        } else {
-            self.player = Player::new(random.range(1, WIDTH), random.range(1, HEIGHT));
-        }
+        self.player = Player::new(random.range(1, WIDTH), random.range(1, HEIGHT));
+
         self.score = 0;
         self.items = vec![Item::spawn()];
         self.frame_time = 0.0;
@@ -222,7 +214,7 @@ impl State {
         for s in self.player.segments.iter_mut().skip(1) {
             if head.x == s.x && head.y == s.y && tail.direction_now != Direction::Stopped {
                 //self.mode = GameMode::GameOver;
-                println!("collided with own segment");
+                //println!("collided with own segment");
             }
             for m in &mut self.mongeese {
                 //todo

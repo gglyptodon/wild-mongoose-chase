@@ -20,7 +20,7 @@ pub enum ItemType {
 
 impl Distribution<ItemType> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> ItemType {
-        match rng.gen_range(0..=3) {
+        match rng.gen_range(0..=2) {
             0 => ItemType::Grains,
             1 => ItemType::Yummy,
             //2 => ItemType::Startling,
@@ -42,10 +42,10 @@ impl Item {
     pub fn spawn_on_free_space(occupied: &HashSet<(i32, i32)>) -> Self {
         let mut new = Item::spawn();
         while occupied.contains(&(new.x, new.y)) {
-            println!("renew {:?}", occupied);
+            //println!("renew {:?}", occupied);
             new = Item::spawn();
         }
-        println!("spawn on free {:?}", occupied);
+        //println!("spawn on free {:?}", occupied);
         new
     }
     pub fn spawn() -> Self {

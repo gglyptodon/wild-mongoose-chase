@@ -116,7 +116,7 @@ impl Player {
     }
 
     pub fn render(&mut self, ctx: &mut BTerm) {
-        let mut glyph_idx = match self.direction {
+        let glyph_idx = match self.direction {
             Direction::Left => 246,
             Direction::Right => 248,
             Direction::Up => 250,
@@ -174,7 +174,7 @@ impl Player {
         seg0.take_move();
         if occupied.contains(&(seg0.x, seg0.y)) {
             seg0.un_move(self.direction);
-            println!("unmoving head");
+            //println!("unmoving head");
         }
 
         //occupied = &mut vec![(seg0.x, seg0.y)];
@@ -237,16 +237,16 @@ impl Player {
 
             ItemType::Egg => self.append(),
             ItemType::Grains => {
-                println!("increment score here")
+                //println!("increment score here")
             }
             ItemType::Yummy => {
-                println!("yum")
+               // println!("yum")
             }
             ItemType::Startling => {
             }
 
             ItemType::Mystery => {
-                println!("mysterious")
+            //    println!("mysterious")
             }
 
         }
