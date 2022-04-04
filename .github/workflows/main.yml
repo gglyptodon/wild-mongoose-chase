@@ -23,10 +23,10 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - run: cd wild-mongoose-chase
       - uses: actions-rs/cargo@v1
         with:
           command: test
+          args: --manifest-path wild-mongoose-chase/Cargo.toml
   wasm:
     name: Generate wasm output
     runs-on: ubuntu-latest
@@ -43,10 +43,10 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: check
-          args: --target wasm32-unknown-unknown
-      - run: ./wasmhelper.sh
+          args: --target wasm32-unknown-unknown --manifest-path wild-mongoose-chase/Cargo.toml
+      - run: cd wild-mongoose-chase && ./wasmhelper.sh
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.2.5
         with:
           branch: gh-pages # The branch the action should deploy to.
-          folder: wasm_out # The folder the action should deploy.
+          folder: wild-mongoose-chase/wasm_out # The folder the action should deploy.
