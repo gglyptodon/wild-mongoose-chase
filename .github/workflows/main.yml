@@ -23,6 +23,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+      - run: cd wild-mongoose-chase
       - uses: actions-rs/cargo@v1
         with:
           command: test
@@ -36,6 +37,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+      - run: cd wild-mongoose-chase
       - run: rustup target add wasm32-unknown-unknown
       - run: cargo install -f wasm-bindgen-cli
       - uses: actions-rs/cargo@v1
