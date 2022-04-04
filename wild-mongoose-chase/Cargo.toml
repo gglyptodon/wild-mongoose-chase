@@ -1,9 +1,0 @@
-[package]
-name = "wild-mongoose-chase"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-bracket-lib = "~0.8.1"
-getrandom = { version = "0.2", features = ["js"] }
-rand = "0.8"
