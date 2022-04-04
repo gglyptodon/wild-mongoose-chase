@@ -248,25 +248,12 @@ impl Player {
                 println!("yum")
             }
             ItemType::Startling => {
-                println!("aaaah!");
-                let tmp = self.segments.clone();
-                for (i, s) in self.segments.iter_mut().enumerate().skip(2) {
-                    //step back from the noise
-
-                    //s.direction_next = Direction::Stopped;
-                    //s.direction_now = Direction::Stopped;
-                    //s.y = tmp.get(i-1).unwrap().y;
-                    // s.x = tmp.get(i-1).unwrap().x;
-
-                    //s.y -=1;
-                }
             }
 
             ItemType::Mystery => {
                 println!("mysterious")
-            } // ItemType::Weeds => {
-              //     println!("Weeds")
-              // }
+            }
+
         }
     }
 }

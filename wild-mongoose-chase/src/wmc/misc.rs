@@ -1,8 +1,7 @@
 use crate::wmc::item::{Item, ItemType};
-use crate::wmc::player::{Direction, Player, Segment};
+use crate::wmc::player::{Direction, Player};
 use bracket_lib::prelude::*;
 use std::collections::HashSet;
-use std::hash::Hash;
 
 use crate::wmc::mongoose::Mongoose;
 use crate::wmc::player::Direction::Stopped;
@@ -152,7 +151,7 @@ impl State {
             // adjust items via timer (grass to weeds, weeds to dangerous weeds and back)
             for mut i in &mut self.items {
                 //todo
-                if let Some(mut time) = i.timer {
+                if let Some(time) = i.timer {
                     i.timer = Some(time - 1.0);
                     if time <= 0.0 {
                         if i.item_type == ItemType::Grains {
@@ -173,7 +172,7 @@ impl State {
 
             self.occupied = self.player.gravity_and_move(&self.occupied);
             if self.frame_time_mongoose > 2.0 * FRAME_DURATION {
-                for mut m in &mut self.mongeese {
+                for m in &mut self.mongeese {
                     if self.player.direction == Stopped {
                     }
                     //todo

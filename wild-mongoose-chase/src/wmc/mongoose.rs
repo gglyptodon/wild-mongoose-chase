@@ -1,13 +1,5 @@
 use crate::{HEIGHT, WIDTH};
 use bracket_lib::prelude::*;
-
-use rand::{
-    distributions::{Distribution, Standard},
-    Rng,
-};
-
-use wmc::item::Item as WMCItem;
-use wmc::item::ItemType;
 use wmc::player::Direction; //todo refactor
 
 use crate::wmc;
@@ -34,7 +26,6 @@ impl Mongoose {
         }
     }
     pub fn spawn_at(x: i32, y: i32) -> Self {
-        let mut random = RandomNumberGenerator::new();
         Self {
             x,
             y,
